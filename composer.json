@@ -1,0 +1,24 @@
+{
+    "name": "matej/producer-portfolio",
+    "description": "Audio portfolio with admin panel",
+    "type": "project",
+    "license": "MIT",
+    
+    
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    
+    
+    "authors": [
+        {
+            "name": "Matej",
+            "email": "matej.hlavac@student.ukf.sk"
+        }
+    ],
+    
+    
+    "require": {}
+}
