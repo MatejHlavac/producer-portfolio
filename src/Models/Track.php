@@ -18,5 +18,21 @@ class Track {
         $this->file_path = $file_path;
     }
 
+    
+    
+    public function save(\PDO $db) {
+        $sql = "INSERT INTO tracks (title, bpm, genre, file_path)
+                VALUES (:title, :bpm, :genre, :file_path)";
+
+        $stmt = $db->prepare($sql);
+
+        return $stmt->execute([
+            ':title'        => $this->title,
+            ':bpm'          => $this->bpm, 
+            ':genre'        => $this->genre, 
+            ':file_path'    => $this->file_path  
+        ]);
+    }
+
 
 }
