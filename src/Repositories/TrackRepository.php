@@ -17,6 +17,6 @@ class TrackRepository {
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_CLASS, Track::class);
+        return $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Track::class);
     }
 }
