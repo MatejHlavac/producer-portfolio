@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Repositories;
-namespace App\Models\Track;
+
+use App\Models\Track;
+use PDO;
 
 class TrackRepository {
     private $dbConnection;
 
-    public function __construct($db) {
+    public function __construct(PDO $db) {
         $this->dbConnection = $db;
     }
 
@@ -15,6 +17,6 @@ class TrackRepository {
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute();
 
-
+        return $stmt->fetchAll(PDO::FETCH_CLASS, Track::class);
     }
 }
