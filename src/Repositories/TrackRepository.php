@@ -45,10 +45,18 @@ class TrackRepository {
     }
 
 
-
-
-
-
+    public function update(Track $track) {
+        $sql = "UPDATE tracks
+                SET title = :title, genre = :genre, bpm = :bpm
+                WHERE id = :id";
+        $stmt = $this->dbConnection->prepare($sql);
+        return $stmt->execute([
+            ":title" => $track->title, 
+            ":genre" => $track->genre, 
+            ":bpm"   => $track->bpm, 
+            ":id"    => $track->id
+        ]);
+    }
 
 
 
