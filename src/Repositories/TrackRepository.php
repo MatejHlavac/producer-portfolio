@@ -19,4 +19,25 @@ class TrackRepository {
 
         return $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Track::class);
     }
+    
+
+    public function findById($id){
+        $sql = "SELECT * FROM tracks WHERE id = :id";
+        $stmt = $this->dbConnection->prepare($sql);
+        $stmt->execute([':id' => $id]);
+
+        $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Track::class);
+        return $stmt->fetch();
+    }
+
+
+
+
+
+
+
+
+
+
+
 }
