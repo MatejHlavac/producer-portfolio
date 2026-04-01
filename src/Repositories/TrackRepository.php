@@ -8,10 +8,14 @@ use PDO;
 class TrackRepository {
     private $dbConnection;
 
+    
+    
     public function __construct(PDO $db) {
         $this->dbConnection = $db;
     }
 
+    
+    
     public function findAll(){
         $sql = "SELECT * FROM tracks";
         $stmt = $this->dbConnection->prepare($sql);
@@ -21,6 +25,7 @@ class TrackRepository {
     }
     
 
+    
     public function findById($id){
         $sql = "SELECT * FROM tracks WHERE id = :id";
         $stmt = $this->dbConnection->prepare($sql);
@@ -28,6 +33,15 @@ class TrackRepository {
 
         $stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Track::class);
         return $stmt->fetch();
+    }
+
+
+    public function delete($id){
+        $sql = "DELETE FROM tracks WHERE id = :id";
+        $stmt = $this->dbConnection->prepare($sql);
+
+        $stmt->execute([':id' => $id]);
+        return $stmt->rowCount() > 0;
     }
 
 
