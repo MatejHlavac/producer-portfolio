@@ -14,6 +14,20 @@ class TrackRepository {
         $this->dbConnection = $db;
     }
 
+    public function save(Track $track) {
+        $sql = "INSERT INTO tracks (title, genre, bpm, file_path)
+                VALUES (:title, :genre, :bpm, :file_path)";
+
+        $stmt = $this->dbConnection->prepare($sql);
+
+        return $stmt->execute([
+            ':title'        => $track->title,
+            ':genre'          => $track->genre, 
+            ':bpm'        => $track->bpm, 
+            ':file_path'    => $track->file_path  
+        ]);
+    }
+
     
     
     public function findAll(){
@@ -47,14 +61,15 @@ class TrackRepository {
 
     public function update(Track $track) {
         $sql = "UPDATE tracks
-                SET title = :title, genre = :genre, bpm = :bpm
+                SET title = :title, genre = :genre, bpm = :bpm, file_path = :file_path 
                 WHERE id = :id";
         $stmt = $this->dbConnection->prepare($sql);
         return $stmt->execute([
-            ":title" => $track->title, 
-            ":genre" => $track->genre, 
-            ":bpm"   => $track->bpm, 
-            ":id"    => $track->id
+            ":title"        => $track->title, 
+            ":genre"        => $track->genre, 
+            ":bpm"          => $track->bpm,
+            ":file_path"    => $track->file_path,  
+            ":id"           => $track->id
         ]);
     }
 
