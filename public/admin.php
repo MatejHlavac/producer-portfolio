@@ -21,9 +21,9 @@ $tracks = $trackRepo->findAll();
 <script src="https://cdn.tailwindcss.com"></script>
 <div class="relative flex items-center justify-center min-h-screen bg-[#050505] overflow-hidden p-6 font-sans">
 
-    <div class="absolute -top-40 -left-20 w-[600px] h-[600px] bg-blue-700/15 rounded-full blur-[160px] opacity-70"></div>
-    <div class="absolute bottom-10 left-[15%] w-[500px] h-[500px] bg-emerald-700/10 rounded-full blur-[140px]"></div>
-    <div class="absolute top-[10%] right-[10%] w-[250px] h-[250px] bg-purple-600/20 rounded-full blur-[90px] opacity-60"></div>
+    <div class="absolute -top-40 -left-20 w-[600px] h-[600px] bg-blue-700/20 rounded-full blur-[160px] opacity-70"></div>
+    <div class="absolute bottom-[-10%] left-[15%] w-[500px] h-[500px] bg-emerald-700/15 rounded-full blur-[140px]"></div>
+    <div class="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[90px] opacity-60"></div>
 
     <div class="relative w-full max-w-6xl bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-8 shadow-2xl backdrop-blur-[40px]">
 
