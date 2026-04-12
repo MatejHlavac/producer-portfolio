@@ -1,5 +1,6 @@
 <?php
 require_once "../vendor/autoload.php";
+
 use App\Database\Connection;
 use PDOException;
 
@@ -43,6 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <div class="flex items-center justify-center min-h-screen bg-[#050505]">
+
+  <div class="fixed bottom-8 left-0 w-full flex justify-center">
+    <a href="index.php" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.3em] hover:text-white transition-colors duration-300">
+      Back
+    </a>
+  </div>
+
+
   <div class="fixed inset-0 overflow-hidden pointer-events-none">
     <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px]"></div>
 
