@@ -21,6 +21,32 @@ $tracks = $trackRepo->findAll();
 <script src="https://cdn.tailwindcss.com"></script>
 <div class="relative flex items-center justify-center min-h-screen bg-[#050505] overflow-hidden p-6 font-sans">
 
+
+
+    <div class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
+
+        <div class="relative w-full max-w-sm bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
+
+            <div class="relative z-10">
+                <h3 class="text-xl font-medium text-white/90 tracking-tight text-center mb-10">
+                    Do you really want to delete this track?
+                </h3>
+
+                <div class="flex gap-3">
+
+                    <button class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
+                        OK
+                    </button>
+
+                    <button class="w-full px-6 py-4 bg-red-500/[0.03] hover:bg-red-500/[0.08] border border-red-500/10 hover:border-red-500/30 rounded-2xl text-sm font-medium text-red-400/60 hover:text-red-400 transition-all duration-300">
+                        Cancel
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="absolute -top-40 -left-20 w-[600px] h-[600px] bg-blue-700/20 rounded-full blur-[160px] opacity-70"></div>
     <div class="absolute bottom-[-10%] left-[15%] w-[500px] h-[500px] bg-emerald-700/15 rounded-full blur-[140px]"></div>
     <div class="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[90px] opacity-60"></div>
