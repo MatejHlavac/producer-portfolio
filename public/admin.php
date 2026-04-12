@@ -78,7 +78,7 @@ $tracks = $trackRepo->findAll();
                 </thead>
                 <tbody class="text-sm">
                     <?php foreach ($tracks as $track): ?>
-                        <tr class="group transition-all duration-300">
+                        <tr id="row-<?= $track->id ?>" class="group transition-all duration-300">
                             <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-l border-white/[0.06] rounded-l-2xl text-white/50 transition-all duration-300">
                                 <?= htmlspecialchars($track->id) ?>
                             </td>
@@ -171,7 +171,10 @@ $tracks = $trackRepo->findAll();
                 .then(response => response.json())
                 .then(data => {
                     if (data.success === true) {
-                        location.reload();
+                        const row = document.getElementById(`row-${pendingId}`);
+                        if (row) {
+                            row.remove();
+                        }
                     } else {
                         alert("Error: " + data.message);
                     }
