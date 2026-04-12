@@ -22,8 +22,8 @@ $tracks = $trackRepo->findAll();
 <div class="relative flex items-center justify-center min-h-screen bg-[#050505] overflow-hidden p-6 font-sans">
 
 
-
-    <div class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
+    <!-- delete track confirmation modal -->
+    <div id="custom-confirm" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
 
         <div class="relative w-full max-w-sm bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
 
@@ -34,11 +34,11 @@ $tracks = $trackRepo->findAll();
 
                 <div class="flex gap-3">
 
-                    <button class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
+                    <button id="ok-btn" class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
                         OK
                     </button>
 
-                    <button class="w-full px-6 py-4 bg-red-500/[0.03] hover:bg-red-500/[0.08] border border-red-500/10 hover:border-red-500/30 rounded-2xl text-sm font-medium text-red-400/60 hover:text-red-400 transition-all duration-300">
+                    <button id="cancel-btn" class="w-full px-6 py-4 bg-red-500/[0.03] hover:bg-red-500/[0.08] border border-red-500/10 hover:border-red-500/30 rounded-2xl text-sm font-medium text-red-400/60 hover:text-red-400 transition-all duration-300">
                         Cancel
                     </button>
 
@@ -47,6 +47,8 @@ $tracks = $trackRepo->findAll();
         </div>
     </div>
 
+
+    <!-- uploaded tracks list -->
     <div class="absolute -top-40 -left-20 w-[600px] h-[600px] bg-blue-700/20 rounded-full blur-[160px] opacity-70"></div>
     <div class="absolute bottom-[-10%] left-[15%] w-[500px] h-[500px] bg-emerald-700/15 rounded-full blur-[140px]"></div>
     <div class="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[90px] opacity-60"></div>
@@ -107,7 +109,7 @@ $tracks = $trackRepo->findAll();
                                         Edit
                                     </button>
 
-                                    <button class="group/del relative flex items-center justify-center w-7 h-7 rounded-full border border-red-500/40 bg-red-950/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] focus:outline-none" title="Remove">
+                                    <button data-id="<?= htmlspecialchars($track->id) ?>" data-name="<?= htmlspecialchars($track->title) ?>" class="open-modal-btn group/del relative flex items-center justify-center w-7 h-7 rounded-full border border-red-500/40 bg-red-950/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] focus:outline-none" title="Remove">
                                         <svg
                                             class="w-3.5 h-3.5 text-red-400 transition-colors duration-300 group-hover/del:text-white"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -124,6 +126,52 @@ $tracks = $trackRepo->findAll();
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+
         </div>
     </div>
 </div>
+
+
+
+<script>
+    let pendingId = null;
+
+    const modal = document.getElementById('custom-confirm');
+    const okBtn = document.getElementById('ok-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+
+    document.querySelectorAll('.open-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            pendingId = btn.getAttribute('data-id');
+            modal.classList.remove('hidden');
+        });
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        pendingId = null;
+    });
+
+
+    okBtn.addEventListener('click', () => {
+        if (pendingId) {
+
+            fetch('api/delete_track.php?id=' + pendingId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success === true) {
+                        location.reload();
+                    } else {
+                        alert("Error: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Communication error: ", error);
+                    alert("Couldn't connect to the server.");
+                });
+
+            modal.classList.add('hidden');
+        }
+    });
+</script>
