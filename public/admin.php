@@ -28,10 +28,14 @@ $tracks = $trackRepo->findAll();
         <div class="relative w-full max-w-sm bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
 
             <div class="relative z-10">
-                <h3 class="text-xl font-medium text-white/90 tracking-tight text-center mb-10">
-                    Do you really want to delete this track?
+                <h3 class="text-[13px] font-bold text-white/30 uppercase tracking-[0.2em] text-center mb-6">
+                    Confirm Deletion
                 </h3>
 
+                <div class="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-4 mb-10 text-center">
+                    <p class="text-xs text-white/40 uppercase tracking-widest mb-1">Track to remove</p>
+                    <span id="modal-track-name" class="text-white/90 font-medium text-lg"></span>
+                </div>
                 <div class="flex gap-3">
 
                     <button id="ok-btn" class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
@@ -109,7 +113,9 @@ $tracks = $trackRepo->findAll();
                                         Edit
                                     </button>
 
-                                    <button data-id="<?= htmlspecialchars($track->id) ?>" data-name="<?= htmlspecialchars($track->title) ?>" class="open-modal-btn group/del relative flex items-center justify-center w-7 h-7 rounded-full border border-red-500/40 bg-red-950/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] focus:outline-none" title="Remove">
+                                    <button data-id="<?= htmlspecialchars($track->id) ?>" data-name="<?= htmlspecialchars($track->title) ?>" class="open-modal-btn group/del relative flex items-center 
+                                        justify-center w-7 h-7 rounded-full border border-red-500/40 bg-red-950/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] transition-all duration-300 hover:border-red-500 
+                                        hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] focus:outline-none" title="Remove">
                                         <svg
                                             class="w-3.5 h-3.5 text-red-400 transition-colors duration-300 group-hover/del:text-white"
                                             xmlns="http://www.w3.org/2000/svg"
@@ -136,6 +142,7 @@ $tracks = $trackRepo->findAll();
 
 <script>
     let pendingId = null;
+    let trackName = null;
 
     const modal = document.getElementById('custom-confirm');
     const okBtn = document.getElementById('ok-btn');
@@ -144,6 +151,9 @@ $tracks = $trackRepo->findAll();
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             pendingId = btn.getAttribute('data-id');
+            trackName = btn.getAttribute('data-name');
+
+            document.getElementById('modal-track-name').innerText = '"' + pendingId + " " + trackName + '"';
             modal.classList.remove('hidden');
         });
     });
@@ -151,12 +161,12 @@ $tracks = $trackRepo->findAll();
     cancelBtn.addEventListener('click', () => {
         modal.classList.add('hidden');
         pendingId = null;
+        trackName = null;
     });
 
 
     okBtn.addEventListener('click', () => {
         if (pendingId) {
-
             fetch('api/delete_track.php?id=' + pendingId)
                 .then(response => response.json())
                 .then(data => {
