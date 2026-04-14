@@ -22,6 +22,71 @@ $tracks = $trackRepo->findAll();
 <div class="relative flex items-center justify-center min-h-screen bg-[#050505] overflow-hidden p-6 font-sans">
 
 
+    <!-- edit track form -->
+    <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="relative w-full max-w-md bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
+
+            <div class="text-center mb-10">
+                <h3 class="text-white/90 font-medium text-2xl mb-2">Edit Track</h3>
+                <p class="text-white/40 text-[11px] font-bold uppercase tracking-widest">Update track details</p>
+            </div>
+
+            <form id="edit-track-form" enctype="multipart/form-data" class="space-y-5">
+                <input type="hidden" id="edit-track-id" name="id">
+
+                <div>
+                    <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Track Title</label>
+                    <input type="text" id="edit-track-title" name="title"
+                        class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
+                        placeholder="Enter title...">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Genre</label>
+                        <input type="text" id="edit-track-genre" name="genre"
+                            class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
+                            placeholder="e.g. Techno">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">BPM</label>
+                        <input type="number" id="edit-track-bpm" name="bpm"
+                            class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
+                            placeholder="128">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Replace Audio (Optional)</label>
+                    <div class="relative group">
+                        <input type="file" id="edit-track-file" name="audio" accept="audio/mpeg"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="w-full bg-white/[0.02] border border-white/[0.1] border-dashed rounded-2xl px-5 py-4 text-white/30 group-hover:border-emerald-500/50 transition-all flex items-center justify-between">
+                            <span id="file-name-display" class="text-sm">Choose new MP3 file...</span>
+                            <svg class="w-4 h-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-6">
+                    <button type="submit"
+                        class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
+                        Save
+                    </button>
+                    <button type="button" id="close-edit-modal"
+                        class="w-full px-6 py-4 bg-red-500/[0.03] hover:bg-red-500/[0.08] border border-red-500/10 hover:border-red-500/30 rounded-2xl text-sm font-medium text-red-400/60 hover:text-red-400 transition-all duration-300">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
     <!-- delete track confirmation modal -->
     <div id="custom-confirm" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
 

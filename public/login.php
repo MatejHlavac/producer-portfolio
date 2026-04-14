@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <div class="flex items-center justify-center min-h-screen bg-[#050505]">
 
+  <!-- back button -->
   <div class="fixed bottom-8 left-0 w-full flex justify-center">
     <a href="index.php" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.3em] hover:text-white transition-colors duration-300">
       Back
