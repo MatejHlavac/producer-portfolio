@@ -23,17 +23,22 @@ $tracks = $trackRepo->findAll();
 
 
     <!-- edit track form -->
-    <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="edit-modal" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
         <div class="relative w-full max-w-md bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
 
+            <!-- title -->
             <div class="text-center mb-10">
                 <h3 class="text-white/90 font-medium text-2xl mb-2">Edit Track</h3>
                 <p class="text-white/40 text-[11px] font-bold uppercase tracking-widest">Update track details</p>
             </div>
 
+
+
             <form id="edit-track-form" enctype="multipart/form-data" class="space-y-5">
                 <input type="hidden" id="edit-track-id" name="id">
 
+
+                <!-- track title input -->
                 <div>
                     <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Track Title</label>
                     <input type="text" id="edit-track-title" name="title"
@@ -41,6 +46,8 @@ $tracks = $trackRepo->findAll();
                         placeholder="Enter title...">
                 </div>
 
+
+                <!-- track genre and bpm input -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Genre</label>
@@ -57,6 +64,8 @@ $tracks = $trackRepo->findAll();
                     </div>
                 </div>
 
+
+                <!-- track file input -->
                 <div>
                     <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Replace Audio (Optional)</label>
                     <div class="relative group">
@@ -71,6 +80,8 @@ $tracks = $trackRepo->findAll();
                     </div>
                 </div>
 
+
+                <!-- buttons -->
                 <div class="grid grid-cols-2 gap-3 pt-6">
                     <button type="submit"
                         class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
@@ -174,11 +185,22 @@ $tracks = $trackRepo->findAll();
 
                             <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-r border-white/[0.06] rounded-r-2xl text-right transition-all duration-300">
                                 <div class="flex items-center justify-end gap-5">
-                                    <button class="text-[10px] font-bold text-white/30 uppercase tracking-widest hover:text-white transition-colors duration-300">
+
+                                    <!-- edit button -->
+                                    <button
+                                        data-id="<?= $track->id ?>"
+                                        data-title="<?= htmlspecialchars($track->title) ?>"
+                                        data-genre="<?= htmlspecialchars($track->genre) ?>"
+                                        data-bpm="<?= $track->bpm ?>"
+                                        class="open-edit-modal-btn text-[10px] font-bold text-white/30 uppercase tracking-widest hover:text-white transition-colors duration-300">
                                         Edit
                                     </button>
 
-                                    <button data-id="<?= htmlspecialchars($track->id) ?>" data-name="<?= htmlspecialchars($track->title) ?>" class="open-modal-btn group/del relative flex items-center 
+                                    <!-- delete button -->
+                                    <button
+                                        data-id="<?= htmlspecialchars($track->id) ?>"
+                                        data-name="<?= htmlspecialchars($track->title) ?>"
+                                        class="open-modal-btn group/del relative flex items-center 
                                         justify-center w-7 h-7 rounded-full border border-red-500/40 bg-red-950/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] transition-all duration-300 hover:border-red-500 
                                         hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] focus:outline-none" title="Remove">
                                         <svg
@@ -213,6 +235,9 @@ $tracks = $trackRepo->findAll();
     const okBtn = document.getElementById('ok-btn');
     const cancelBtn = document.getElementById('cancel-btn');
 
+    const editModal = document.getElementById('edit-modal');
+    const closeEditBtn = document.getElementById('close-edit-modal')
+
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             pendingId = btn.getAttribute('data-id');
@@ -223,10 +248,39 @@ $tracks = $trackRepo->findAll();
         });
     });
 
+    document.querySelectorAll('.open-edit-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            const title = btn.getAttribute('data-title');
+            const genre = btn.getAttribute('data-genre');
+            const bpm = btn.getAttribute('data-bpm');
+
+            document.getElementById('edit-track-id').value = id;
+            document.getElementById('edit-track-title').value = title;
+            document.getElementById('edit-track-genre').value = genre;
+            document.getElementById('edit-track-bpm').value = bpm;
+
+            document.getElementById('file-name-display').innerText = "Keep current or upload new...";
+
+            editModal.classList.remove('hidden');
+
+        });
+
+    });
+
     cancelBtn.addEventListener('click', () => {
         modal.classList.add('hidden');
         pendingId = null;
         trackName = null;
+    });
+
+    closeEditBtn.addEventListener('click', () => {
+        editModal.classList.add('hidden');
+    });
+
+    document.getElementById('edit-track-file').addEventListener('change', function() {
+        const fileName = this.files[0] ? this.files[0].name : "Choose new MP3 file...";
+        document.getElementById('file-name-display').innerText = fileName;
     });
 
 
