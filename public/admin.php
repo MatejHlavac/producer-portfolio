@@ -41,7 +41,7 @@ $tracks = $trackRepo->findAll();
                 <!-- track title input -->
                 <div>
                     <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Track Title</label>
-                    <input type="text" id="edit-track-title" name="title"
+                    <input type="text" id="edit-track-title" name="title" required
                         class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
                         placeholder="Enter title...">
                 </div>
@@ -51,14 +51,14 @@ $tracks = $trackRepo->findAll();
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Genre</label>
-                        <input type="text" id="edit-track-genre" name="genre"
+                        <input type="text" id="edit-track-genre" name="genre" required
                             class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
                             placeholder="e.g. Techno">
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">BPM</label>
-                        <input type="number" id="edit-track-bpm" name="bpm"
+                        <input type="number" id="edit-track-bpm" name="bpm" required
                             class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
                             placeholder="128">
                     </div>
@@ -326,6 +326,14 @@ $tracks = $trackRepo->findAll();
         e.preventDefault();
 
         const formData = new FormData(this);
+
+        const title = formData.get('title').trim();
+        const genre = formData.get('genre').trim();
+        const bpm = formData.get('bpm');
+
+        if (title === "" || genre === "" || !bpm || bpm <= 0) {
+            return;
+        }
 
         fetch('api/update_track.php', {
                 method: 'POST',
