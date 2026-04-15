@@ -334,7 +334,20 @@ $tracks = $trackRepo->findAll();
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log("Server response: edit successful");
+                    const id = formData.get('id');
+                    const row = document.getElementById(`row-${id}`);
+
+                    if (row) {
+                        row.querySelector('td:nth-child(2)').innerText = formData.get('title');
+                        row.querySelector('td:nth-child(3)').innerText = formData.get('genre');
+                        row.querySelector('td:nth-child(4) span').innerText = formData.get('bpm');
+
+                        const editBtn = row.querySelector('.open-edit-modal-btn');
+                        editBtn.setAttribute('data-title', formData.get('title'));
+                        editBtn.setAttribute('data-genre', formData.get('genre'));
+                        editBtn.setAttribute('data-bpm', formData.get('bpm'));
+                    }
+                    editModal.classList.add('hidden');
                 } else {
                     console.log("Error: " + data.message);
                 }
