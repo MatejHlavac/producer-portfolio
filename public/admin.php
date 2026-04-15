@@ -339,5 +339,6 @@ $tracks = $trackRepo->findAll();
                     console.log("Error: " + data.message);
                 }
             })
+            .catch(error => console.error("Error: ", error));
     });
 </script>
