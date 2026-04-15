@@ -228,6 +228,9 @@ $tracks = $trackRepo->findAll();
 
 
 <script>
+    //     DELETE MODAL     //
+
+
     let pendingId = null;
     let trackName = null;
 
@@ -235,8 +238,6 @@ $tracks = $trackRepo->findAll();
     const okBtn = document.getElementById('ok-btn');
     const cancelBtn = document.getElementById('cancel-btn');
 
-    const editModal = document.getElementById('edit-modal');
-    const closeEditBtn = document.getElementById('close-edit-modal')
 
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -248,41 +249,12 @@ $tracks = $trackRepo->findAll();
         });
     });
 
-    document.querySelectorAll('.open-edit-modal-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.getAttribute('data-id');
-            const title = btn.getAttribute('data-title');
-            const genre = btn.getAttribute('data-genre');
-            const bpm = btn.getAttribute('data-bpm');
-
-            document.getElementById('edit-track-id').value = id;
-            document.getElementById('edit-track-title').value = title;
-            document.getElementById('edit-track-genre').value = genre;
-            document.getElementById('edit-track-bpm').value = bpm;
-
-            document.getElementById('file-name-display').innerText = "Keep current or upload new...";
-
-            editModal.classList.remove('hidden');
-
-        });
-
-    });
 
     cancelBtn.addEventListener('click', () => {
         modal.classList.add('hidden');
         pendingId = null;
         trackName = null;
     });
-
-    closeEditBtn.addEventListener('click', () => {
-        editModal.classList.add('hidden');
-    });
-
-    document.getElementById('edit-track-file').addEventListener('change', function() {
-        const fileName = this.files[0] ? this.files[0].name : "Choose new MP3 file...";
-        document.getElementById('file-name-display').innerText = fileName;
-    });
-
 
     okBtn.addEventListener('click', () => {
         if (pendingId) {
@@ -305,5 +277,67 @@ $tracks = $trackRepo->findAll();
 
             modal.classList.add('hidden');
         }
+    });
+
+
+
+    //     EDIT MODAL     //
+
+
+    const editModal = document.getElementById('edit-modal');
+    const closeEditBtn = document.getElementById('close-edit-modal');
+
+
+    document.querySelectorAll('.open-edit-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            const title = btn.getAttribute('data-title');
+            const genre = btn.getAttribute('data-genre');
+            const bpm = btn.getAttribute('data-bpm');
+
+            document.getElementById('edit-track-id').value = id;
+            document.getElementById('edit-track-title').value = title;
+            document.getElementById('edit-track-genre').value = genre;
+            document.getElementById('edit-track-bpm').value = bpm;
+
+            document.getElementById('file-name-display').innerText = "Keep current or upload new...";
+
+            editModal.classList.remove('hidden');
+
+        });
+
+    });
+
+
+    closeEditBtn.addEventListener('click', () => {
+        editModal.classList.add('hidden');
+    });
+
+    // function to update file input placeholder to name of the inserted file 
+    document.getElementById('edit-track-file').addEventListener('change', function() {
+        const fileName = this.files[0] ? this.files[0].name : "Choose new MP3 file...";
+        document.getElementById('file-name-display').innerText = fileName;
+    });
+
+
+    const editForm = document.getElementById('edit-track-form');
+
+    editForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
+        fetch('api/update_track.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log("Server response: edit successful");
+                } else {
+                    console.log("Error: " + data.message);
+                }
+            })
     });
 </script>
