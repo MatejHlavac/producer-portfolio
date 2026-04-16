@@ -138,9 +138,32 @@ $tracks = $trackRepo->findAll();
     -->
     <div class="relative w-full max-w-6xl bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-8 shadow-2xl backdrop-blur-[40px]">
 
-        <div class="mb-8 relative">
-            <h2 class="text-2xl font-medium text-white/95 tracking-tight">Uploaded tracks</h2>
-            <p class="text-[11px] font-bold text-white/40 tracking-[0.25em] uppercase mt-1">List of available tracks</p>
+
+        <div class="flex">
+            <div class="mb-8 ml-3 relative">
+                <h2 class="text-2xl font-medium text-white/95 tracking-tight">Uploaded tracks</h2>
+                <p class="text-[11px] font-bold text-white/40 tracking-[0.25em] uppercase mt-1">List of available tracks</p>
+            </div>
+
+
+            <div class="flex justify-between ml-auto mr-4 items-center mb-6">
+                <button id="open-add-modal-btn"
+                    class="group p-2 text-gray-400 hover:text-emerald-400 transition-all duration-300 focus:outline-none"
+                    title="Add New Track">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-7 h-7 transform group-hover: transition-transform duration-300"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+
         </div>
 
         <div class="overflow-x-auto">
