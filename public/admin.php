@@ -25,6 +25,70 @@ $tracks = $trackRepo->findAll();
         style="background-image: url('../assets/background-inspo-2.jpg'); background-size: cover; background-position: center; filter: grayscale(100%) blur(3px);">
     </div>
 
+
+    <div id="add-modal" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
+        <div class="relative w-full max-w-2xl bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
+
+            <div class="text-center mb-10">
+                <h3 class="text-white/90 font-medium text-2xl mb-2">Upload New Entry</h3>
+                <p class="text-white/40 text-[11px] font-bold uppercase tracking-widest">Fill in the details to upload a new track</p>
+            </div>
+
+            <form id="add-track-form" enctype="multipart/form-data" class="space-y-6">
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Track Title</label>
+                        <input type="text" name="title" required
+                            class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
+                            placeholder="Song name...">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Genre</label>
+                        <input type="text" name="genre" required
+                            class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
+                            placeholder="e.g. House">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">BPM</label>
+                        <input type="number" name="bpm" required
+                            class="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl px-5 py-4 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 transition-all"
+                            placeholder="120">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] mb-2 ml-1">Audio File (MP3)</label>
+                        <div class="relative group">
+                            <input type="file" name="audio" accept="audio/mpeg" required
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                onchange="document.getElementById('add-file-name-display').innerText = this.files[0].name">
+                            <div class="w-full bg-white/[0.02] border border-white/[0.1] border-dashed rounded-2xl px-5 py-4 text-white/30 group-hover:border-emerald-500/50 transition-all flex items-center justify-between">
+                                <span id="add-file-name-display" class="text-sm truncate mr-2">Select file...</span>
+                                <svg class="w-4 h-4 opacity-30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-6">
+                    <button type="submit"
+                        class="w-full px-6 py-4 bg-emerald-500/[0.03] hover:bg-emerald-500/[0.08] border border-emerald-500/10 hover:border-emerald-500/30 rounded-2xl text-sm font-medium text-emerald-400/70 hover:text-emerald-400 transition-all duration-300">
+                        Upload
+                    </button>
+                    <button type="button" id="close-add-modal"
+                        class="w-full px-6 py-4 bg-red-500/[0.03] hover:bg-red-500/[0.08] border border-red-500/10 hover:border-red-500/30 rounded-2xl text-sm font-medium text-red-400/60 hover:text-red-400 transition-all duration-300">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- edit track form -->
     <div id="edit-modal" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
         <div class="relative w-full max-w-md bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
@@ -136,7 +200,7 @@ $tracks = $trackRepo->findAll();
     <div class="absolute bottom-[-10%] left-[15%] w-[500px] h-[500px] bg-emerald-700/15 rounded-full blur-[140px]"></div>
     <div class="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[90px] opacity-60"></div>
     -->
-    <div class="relative w-full max-w-6xl bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-8 shadow-2xl backdrop-blur-[40px]">
+    <div class="relative w-full max-w-6xl bg-white/[0.03] border border-white/[0.08] rounded-[2.5rem] p-8 shadow-2xl backdrop-blur-[20px]">
 
 
         <div class="flex">
