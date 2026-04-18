@@ -16,7 +16,7 @@ use App\Repositories\TrackRepository;
 $db = (new Connection())->connect();
 $trackRepo = new TrackRepository($db);
 
-if ($_SERVER['REQUEST METHOD'] === 'POST' && isset($_FILES['audio'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['audio'])) {
     $file = $_FILES['audio'];
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -52,9 +52,9 @@ if ($_SERVER['REQUEST METHOD'] === 'POST' && isset($_FILES['audio'])) {
     $finalFileName = time() . '_' . $cleanName . '.' . $fileExtension;
 
 
-    $uploadDir = '../../uploads/tracks';
+    $uploadDir = '../../uploads/tracks/';
     $destination = $uploadDir . $finalFileName;
-    $relativeFilePath = 'uploads/tracks' . $finalFileName;
+    $relativeFilePath = 'uploads/tracks/' . $finalFileName;
 
 
     //transfer uploaded file from temporary folder to our folder 
@@ -73,10 +73,14 @@ if ($_SERVER['REQUEST METHOD'] === 'POST' && isset($_FILES['audio'])) {
                 'id'        => $newTrackId,
                 'file_path' => $newTrack->file_path
             ]));
+            exit();
         } else {
             echo (json_encode(['success' => false, 'message' => 'Database saving failed']));
+            exit();
         }
     } else {
         echo (json_encode(['success' => false, 'message' => 'Failed to move uploaded file']));
+        exit();
     }
+    echo (json_encode(['success' => false, 'message' => 'Invalid request or no file uploaded']));
 }
