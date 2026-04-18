@@ -6,9 +6,10 @@ use App\Database\Connection;
 use App\Models\Track;
 use App\Repositories\TrackRepository;
 
-if (!isset($_SESSION['admin_logged_in'])) {
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
+    exit();
 }
 
 $db = (new Connection())->connect();

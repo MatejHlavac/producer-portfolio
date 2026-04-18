@@ -54,4 +54,29 @@ if ($_SERVER['REQUEST METHOD'] === 'POST' && isset($_FILES['audio'])) {
 
     $uploadDir = '../../uploads/tracks';
     $destination = $uploadDir . $finalFileName;
+    $relativeFilePath = 'uploads/tracks' . $finalFileName;
+
+
+    //transfer uploaded file from temporary folder to our folder 
+    // AND 
+    //create new instance of track in database
+
+    if (move_uploaded_file($file['tmp_name'], $destination)) {
+        $newTrack = new Track($title, $genre, $bpm, $relativeFilePath);
+
+        $newTrackId = $trackRepo->save($newTrack);
+
+        if ($newTrackId) {
+            echo (json_encode([
+                'success'   => true,
+                'message'   => 'Track uploaded successfully',
+                'id'        => $newTrackId,
+                'file_path' => $newTrack->file_path
+            ]));
+        } else {
+            echo (json_encode(['success' => false, 'message' => 'Database saving failed']));
+        }
+    } else {
+        echo (json_encode(['success' => false, 'message' => 'Failed to move uploaded file']));
+    }
 }

@@ -428,7 +428,7 @@ $tracks = $trackRepo->findAll();
         editModal.classList.add('hidden');
     });
 
-    // function to update file input placeholder to name of the inserted file 
+    // anonymous function to update file input placeholder to name of the inserted file 
     document.getElementById('edit-track-file').addEventListener('change', function() {
         const fileName = this.files[0] ? this.files[0].name : "Choose new MP3 file...";
         document.getElementById('file-name-display').innerText = fileName;
