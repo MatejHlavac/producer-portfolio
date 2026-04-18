@@ -508,4 +508,35 @@ $tracks = $trackRepo->findAll();
             uploadModal.classList.add('hidden');
         }
     });
+
+
+    uploadForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        console.log('Sending data for track: ', formData.get('title'));
+
+        fetch('api/upload_track.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+
+                    uploadModal.classList.add('hidden');
+                    uploadForm.reset();
+                    document.getElementById('add-file-name-display').innerText = "Select file...";
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Unexpected error in communication with server.');
+            });
+
+
+    })
 </script>
