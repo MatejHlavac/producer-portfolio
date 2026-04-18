@@ -26,6 +26,12 @@ $tracks = $trackRepo->findAll();
     </div>
 
 
+
+
+
+
+
+    <!-- upload track modal -->
     <div id="add-modal" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
         <div class="relative w-full max-w-2xl bg-white/[0.04] border border-white/[0.05] rounded-[2.5rem] p-10 shadow-2xl backdrop-blur-[30px] overflow-hidden">
 
@@ -88,6 +94,12 @@ $tracks = $trackRepo->findAll();
             </form>
         </div>
     </div>
+
+
+
+
+
+
 
     <!-- edit track form -->
     <div id="edit-modal" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
@@ -165,6 +177,12 @@ $tracks = $trackRepo->findAll();
 
 
 
+
+
+
+
+
+
     <!-- delete track confirmation modal -->
     <div id="custom-confirm" class="fixed hidden inset-0 z-50 flex items-center justify-center p-4">
 
@@ -195,7 +213,14 @@ $tracks = $trackRepo->findAll();
     </div>
 
 
+
+
+
+
+
     <!-- uploaded tracks list -->
+
+
     <!--<div class="absolute -top-40 -left-20 w-[600px] h-[600px] bg-blue-700/20 rounded-full blur-[160px] opacity-70"></div>
     <div class="absolute bottom-[-10%] left-[15%] w-[500px] h-[500px] bg-emerald-700/15 rounded-full blur-[140px]"></div>
     <div class="absolute top-[10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[90px] opacity-60"></div>
@@ -451,5 +476,36 @@ $tracks = $trackRepo->findAll();
                 }
             })
             .catch(error => console.error("Error: ", error));
+    });
+
+
+
+    //     UPLOAD MODAL     //
+
+    const uploadModal = document.getElementById('add-modal');
+
+    const openUploadModal = document.getElementById('open-add-modal-btn');
+    const closeUploadModal = document.getElementById('close-add-modal');
+
+    const uploadForm = document.getElementById('add-track-form');
+    const fileNameDisplay = document.getElementById('add-file-name-display');
+
+    // open modal
+    openUploadModal.addEventListener('click', () => {
+        uploadForm.reset();
+        fileNameDisplay.innerText = "Select file...";
+        uploadModal.classList.remove('hidden');
+    });
+
+    // close modal
+    closeUploadModal.addEventListener('click', () => {
+        uploadModal.classList.add('hidden');
+    });
+
+    // close modal by clicking outside of the modal
+    uploadModal.addEventListener('click', (e) => {
+        if (e.target === uploadModal) {
+            uploadModal.classList.add('hidden');
+        }
     });
 </script>
