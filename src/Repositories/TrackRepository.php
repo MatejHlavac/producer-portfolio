@@ -5,42 +5,51 @@ namespace App\Repositories;
 use App\Models\Track;
 use PDO;
 
-class TrackRepository {
+class TrackRepository
+{
     private $dbConnection;
 
-    
-    
-    public function __construct(PDO $db) {
+
+
+    public function __construct(PDO $db)
+    {
         $this->dbConnection = $db;
     }
 
-    public function save(Track $track) {
+    public function save(Track $track)
+    {
         $sql = "INSERT INTO tracks (title, genre, bpm, file_path)
                 VALUES (:title, :genre, :bpm, :file_path)";
 
         $stmt = $this->dbConnection->prepare($sql);
 
-        return $stmt->execute([
+        if ($stmt->execute([
             ':title'        => $track->title,
-            ':genre'          => $track->genre, 
-            ':bpm'        => $track->bpm, 
-            ':file_path'    => $track->file_path  
-        ]);
+            ':genre'          => $track->genre,
+            ':bpm'        => $track->bpm,
+            ':file_path'    => $track->file_path
+        ])) {
+            return $this->dbConnection->lastInsertId();
+        }
+
+        return false;
     }
 
-    
-    
-    public function findAll(){
+
+
+    public function findAll()
+    {
         $sql = "SELECT * FROM tracks";
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, Track::class);
     }
-    
 
-    
-    public function findById($id){
+
+
+    public function findById($id)
+    {
         $sql = "SELECT * FROM tracks WHERE id = :id";
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute([':id' => $id]);
@@ -50,7 +59,8 @@ class TrackRepository {
     }
 
 
-    public function delete($id){
+    public function delete($id)
+    {
         $sql = "DELETE FROM tracks WHERE id = :id";
         $stmt = $this->dbConnection->prepare($sql);
 
@@ -59,22 +69,18 @@ class TrackRepository {
     }
 
 
-    public function update(Track $track) {
+    public function update(Track $track)
+    {
         $sql = "UPDATE tracks
                 SET title = :title, genre = :genre, bpm = :bpm, file_path = :file_path 
                 WHERE id = :id";
         $stmt = $this->dbConnection->prepare($sql);
         return $stmt->execute([
-            ":title"        => $track->title, 
-            ":genre"        => $track->genre, 
+            ":title"        => $track->title,
+            ":genre"        => $track->genre,
             ":bpm"          => $track->bpm,
-            ":file_path"    => $track->file_path,  
+            ":file_path"    => $track->file_path,
             ":id"           => $track->id
         ]);
     }
-
-
-
-
-
 }
