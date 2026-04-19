@@ -354,15 +354,6 @@ $tracks = $trackRepo->findAll();
     const cancelBtn = document.getElementById('cancel-btn');
 
 
-    document.querySelectorAll('.open-modal-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            pendingId = btn.getAttribute('data-id');
-            trackName = btn.getAttribute('data-name');
-
-            document.getElementById('modal-track-name').innerText = '"' + pendingId + " " + trackName + '"';
-            modal.classList.remove('hidden');
-        });
-    });
 
 
     cancelBtn.addEventListener('click', () => {
@@ -396,19 +387,28 @@ $tracks = $trackRepo->findAll();
 
 
 
-    //     EDIT MODAL     //
 
 
-    const editModal = document.getElementById('edit-modal');
-    const closeEditBtn = document.getElementById('close-edit-modal');
 
 
-    document.querySelectorAll('.open-edit-modal-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const id = btn.getAttribute('data-id');
-            const title = btn.getAttribute('data-title');
-            const genre = btn.getAttribute('data-genre');
-            const bpm = btn.getAttribute('data-bpm');
+
+
+
+    /*
+                        EVENT DELEGATION
+    Using a single listener on the table body to handle clicks 
+    for both Edit and Delete buttons, including dynamically added rows.
+    */
+
+    const tableBody = document.getElementById('tracks-table-body');
+
+    tableBody.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.open-edit-modal-btn');
+        if (editBtn) {
+            const id = editBtn.getAttribute('data-id');
+            const title = editBtn.getAttribute('data-title');
+            const genre = editBtn.getAttribute('data-genre');
+            const bpm = editBtn.getAttribute('data-bpm');
 
             document.getElementById('edit-track-id').value = id;
             document.getElementById('edit-track-title').value = title;
@@ -416,12 +416,39 @@ $tracks = $trackRepo->findAll();
             document.getElementById('edit-track-bpm').value = bpm;
 
             document.getElementById('file-name-display').innerText = "Keep current or upload new...";
-
             editModal.classList.remove('hidden');
+            return;
+        }
 
-        });
 
+        const deleteBtn = e.target.closest('.open-modal-btn');
+        if (deleteBtn) {
+            pendingId = deleteBtn.getAttribute('data-id');
+            trackName = deleteBtn.getAttribute('data-name');
+
+            document.getElementById('modal-track-name').innerText = `"${pendingId} ${trackName}"`;
+            modal.classList.remove('hidden');
+        }
     });
+    //------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+    //     EDIT MODAL     //
+
+
+    const editModal = document.getElementById('edit-modal');
+    const closeEditBtn = document.getElementById('close-edit-modal');
+
+
 
 
     closeEditBtn.addEventListener('click', () => {
@@ -480,6 +507,14 @@ $tracks = $trackRepo->findAll();
 
 
 
+
+
+
+
+
+
+
+
     //     UPLOAD MODAL     //
 
     const uploadModal = document.getElementById('add-modal');
@@ -523,7 +558,14 @@ $tracks = $trackRepo->findAll();
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    const newTrackData = {
+                        id: data.id,
+                        title: formData.get('title'),
+                        genre: formData.get('genre'),
+                        bpm: formData.get('bpm'),
+                        file_path: data.file_path
+                    };
+                    addTrackToTable(newTrackData);
 
                     uploadModal.classList.add('hidden');
                     uploadForm.reset();
@@ -540,15 +582,17 @@ $tracks = $trackRepo->findAll();
 
     })
 
+    //function to add a row
+
     function addTrackToTable(track) {
         const tableBody = document.getElementById('tracks-table-body');
 
-        // Vytvoríme nový element riadka
+
         const row = document.createElement('tr');
         row.id = `row-${track.id}`;
         row.className = 'group transition-all duration-300';
 
-        // Tu vložíme vnútro riadka (presná kópia tvojho PHP, ale s JS premennými)
+
         row.innerHTML = `
         <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-l border-white/[0.06] rounded-l-2xl text-white/50 transition-all duration-300">
             ${track.id}
