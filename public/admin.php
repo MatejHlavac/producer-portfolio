@@ -545,7 +545,7 @@ $tracks = $trackRepo->findAll();
     });
 
 
-    uploadForm.addEventListener('submit', function(e) {
+    uploadForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
@@ -553,6 +553,9 @@ $tracks = $trackRepo->findAll();
 
         const MAX_SIZE = 10 * 1024 * 1024;
         const ALLOWED_TYPE = 'audio/mpeg';
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
 
         if (audioFile && audioFile.size > 0) {
             if (audioFile.size > MAX_SIZE) {
@@ -569,36 +572,57 @@ $tracks = $trackRepo->findAll();
             return;
         }
 
-        fetch('api/upload_track.php', {
+
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+            <span class="flex items-center justify-center gap-2">
+                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Uploading...
+            </span>
+            `;
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+
+
+            const response = await fetch('api/upload_track.php', {
                 method: 'POST',
                 body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const newTrackData = {
-                        id: data.id,
-                        title: formData.get('title'),
-                        genre: formData.get('genre'),
-                        bpm: formData.get('bpm'),
-                        file_path: data.file_path
-                    };
-                    addTrackToTable(newTrackData);
-
-                    uploadModal.classList.add('hidden');
-                    uploadForm.reset();
-                    document.getElementById('add-file-name-display').innerText = "Select file...";
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Unexpected error in communication with server.');
             });
 
+            const data = await response.json();
 
-    })
+
+
+            if (data.success) {
+                const newTrackData = {
+                    id: data.id,
+                    title: formData.get('title'),
+                    genre: formData.get('genre'),
+                    bpm: formData.get('bpm'),
+                    file_path: data.file_path
+                };
+                addTrackToTable(newTrackData);
+
+                uploadModal.classList.add('hidden');
+                uploadForm.reset();
+                document.getElementById('add-file-name-display').innerText = "Select file...";
+            } else {
+                alert('Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Unexpected error occurred.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+
+    });
 
     //function to add a row
 
