@@ -267,7 +267,7 @@ $tracks = $trackRepo->findAll();
                         <th class="px-6 py-2 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="text-sm">
+                <tbody id="tracks-table-body" class="text-sm">
                     <?php foreach ($tracks as $track): ?>
                         <tr id="row-<?= $track->id ?>" class="group transition-all duration-300">
                             <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-l border-white/[0.06] rounded-l-2xl text-white/50 transition-all duration-300">
@@ -539,4 +539,54 @@ $tracks = $trackRepo->findAll();
 
 
     })
+
+    function addTrackToTable(track) {
+        const tableBody = document.getElementById('tracks-table-body');
+
+        // Vytvoríme nový element riadka
+        const row = document.createElement('tr');
+        row.id = `row-${track.id}`;
+        row.className = 'group transition-all duration-300';
+
+        // Tu vložíme vnútro riadka (presná kópia tvojho PHP, ale s JS premennými)
+        row.innerHTML = `
+        <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-l border-white/[0.06] rounded-l-2xl text-white/50 transition-all duration-300">
+            ${track.id}
+        </td>
+        <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-white/[0.06] font-medium text-white/90 transition-all duration-300">
+            <div class="flex items-center gap-3">${track.title}</div>
+        </td>
+        <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-white/[0.06] font-medium text-white/90 transition-all duration-300">
+            <div class="flex items-center gap-3">${track.genre}</div>
+        </td>
+        <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-white/[0.06] font-mono text-[12px] text-white/50 transition-all duration-300">
+            <span class="group-hover:text-white transition-colors duration-300">${track.bpm}</span>
+        </td>
+        <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-white/[0.06] font-mono text-[12px] text-white/50 transition-all duration-300">
+            <span class="group-hover:text-white transition-colors duration-300">${track.file_path}</span>
+        </td>
+        <td class="px-6 py-4 bg-white/[0.02] group-hover:bg-white/[0.05] border-y border-r border-white/[0.06] rounded-r-2xl text-right transition-all duration-300">
+            <div class="flex items-center justify-end gap-5">
+                <button
+                    data-id="${track.id}"
+                    data-title="${track.title}"
+                    data-genre="${track.genre}"
+                    data-bpm="${track.bpm}"
+                    class="open-edit-modal-btn text-[10px] font-bold text-white/30 uppercase tracking-widest hover:text-white transition-colors duration-300">
+                    Edit
+                </button>
+                <button
+                    data-id="${track.id}"
+                    data-name="${track.title}"
+                    class="open-modal-btn group/del relative flex items-center justify-center w-7 h-7 rounded-full border border-red-500/40 bg-red-950/20 shadow-[0_0_10px_rgba(239,68,68,0.2)] transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] focus:outline-none" title="Remove">
+                    <svg class="w-3.5 h-3.5 text-red-400 transition-colors duration-300 group-hover/del:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </td>
+    `;
+
+        tableBody.prepend(row);
+    }
 </script>
