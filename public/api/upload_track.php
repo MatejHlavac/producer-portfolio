@@ -1,6 +1,11 @@
 <?php
 
 session_start();
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = ['audio/mpeg'];
+
+
 require_once "../../vendor/autoload.php";
 
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
@@ -18,6 +23,19 @@ $trackRepo = new TrackRepository($db);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['audio'])) {
     $file = $_FILES['audio'];
+
+    if ($file['size'] > MAX_FILE_SIZE) {
+        echo json_encode(['success' => false, 'message' => 'File size is too big. Maximum is 10 MB.']);
+        exit;
+    }
+
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($file['tmp_name']);
+
+    if (!in_array($mimeType, ALLOWED_MIME_TYPES)) {
+        echo json_encode(['success' => false, 'message' => 'Type of file not allowed. Only MP3 files allowed.']);
+        exit;
+    }
 
     if ($file['error'] !== UPLOAD_ERR_OK) {
         echo (json_encode(['success' => false, 'message' => 'File upload error code: ' . $file['error']]));

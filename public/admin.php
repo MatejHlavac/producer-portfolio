@@ -549,7 +549,25 @@ $tracks = $trackRepo->findAll();
         e.preventDefault();
 
         const formData = new FormData(this);
-        console.log('Sending data for track: ', formData.get('title'));
+        const audioFile = formData.get('audio');
+
+        const MAX_SIZE = 10 * 1024 * 1024;
+        const ALLOWED_TYPE = 'audio/mpeg';
+
+        if (audioFile && audioFile.size > 0) {
+            if (audioFile.size > MAX_SIZE) {
+                alert('File size is too big. Maximum is 10 MB.');
+                return;
+            }
+
+            if (audioFile.type !== ALLOWED_TYPE) {
+                alert('This type of file not allowed. Only MP3 files allowed.');
+                return;
+            }
+        } else {
+            alert('Please select an MP3 file.');
+            return;
+        }
 
         fetch('api/upload_track.php', {
                 method: 'POST',
