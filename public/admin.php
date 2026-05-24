@@ -491,6 +491,9 @@ $tracks = $trackRepo->findAll();
                         row.querySelector('td:nth-child(2)').innerText = formData.get('title');
                         row.querySelector('td:nth-child(3)').innerText = formData.get('genre');
                         row.querySelector('td:nth-child(4) span').innerText = formData.get('bpm');
+                        if (data.file_path) {
+                            row.querySelector('td:nth-child(5) span').innerText = data.file_path;
+                        }
 
                         const editBtn = row.querySelector('.open-edit-modal-btn');
                         editBtn.setAttribute('data-title', formData.get('title'));
