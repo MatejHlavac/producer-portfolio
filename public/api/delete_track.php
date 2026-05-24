@@ -22,6 +22,18 @@ if ($id) {
     $db = (new Connection())->connect();
     $trackRepo = new TrackRepository($db);
 
+    $trackToDelete = $trackRepo->findById($id);
+    if (!$trackToDelete) {
+        echo json_encode(["success" => false, "message" => "Track not found"]);
+        exit();
+    }
+
+    $absolutePath = __DIR__ . '/../../' . $trackToDelete->file_path;
+
+    if (file_exists($absolutePath)) {
+        unlink($absolutePath);
+    }
+
     $deletionResult = $trackRepo->delete($id);
 
     echo json_encode([
