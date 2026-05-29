@@ -100,5 +100,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['audio'])) {
         echo (json_encode(['success' => false, 'message' => 'Failed to move uploaded file']));
         exit();
     }
-    echo (json_encode(['success' => false, 'message' => 'Invalid request or no file uploaded']));
 }
