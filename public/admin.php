@@ -18,7 +18,7 @@ $trackRepo = new TrackRepository($db);
 $tracks = $trackRepo->findAll();
 
 ?>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="css/output.css">
 <div class="relative flex items-center justify-center min-h-screen bg-[#050505] overflow-hidden p-6 font-sans">
 
     <div class="absolute inset-0 z-0 pointer-events-none opacity-30"
