@@ -23,7 +23,7 @@ $tracks = $trackRepo->findAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Producer Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/output.css">
 </head>
 
 <body class="bg-[#050505]">
@@ -34,7 +34,7 @@ $tracks = $trackRepo->findAll();
         <a href="#hero" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">Producer Portfolio</a>
 
         <!-- Nav Links -->
-        <div class="flex items-center gap-8">
+        <div id="main-navigation" class="flex items-center gap-8">
             <a href="#tracks" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">Tracks</a>
             <a href="#about" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">About</a>
             <a href="#contact" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">Contact</a>
@@ -90,29 +90,51 @@ $tracks = $trackRepo->findAll();
         </section>
     </main>
 
-    <footer class="w-full border-t border-white/[0.06] mt-32 px-6 flex flex-col gap-4">
+    <footer class="w-full mt-32 px-6 flex flex-col gap-4">
 
-        <div class="flex flex-col items-center py-14 gap-5">
-            <div class="flex items-center gap-6">
-                <a href="https://instagram.com/hlinkinn" target="_blank" class="text-white/25 hover:text-white/80 transition-colors duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                        <circle cx="12" cy="12" r="4" />
-                        <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-                    </svg>
-                </a>
-                <a href="mailto:you@example.com" class="text-white/25 hover:text-white/80 transition-colors duration-300">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <rect x="2" y="4" width="20" height="16" rx="2" />
-                        <polyline points="2,4 12,13 22,4" />
-                    </svg>
-                </a>
+        <div class="grid grid-cols-3 items-center py-14">
+
+            <!-- logo vlavo -->
+            <div class="flex justify-center ml-32">
+                <div class="w-12 h-12 rounded-xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center">
+                    <span class="text-[9px] font-bold text-white/15 uppercase tracking-widest">Logo</span>
+                </div>
             </div>
-            <nav class="flex items-center gap-8">
-                <a href="#tracks" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">Tracks</a>
-                <a href="#about" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">About</a>
-                <a href="#contact" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">Contact</a>
-            </nav>
+
+            <!-- stred -->
+            <div class="flex flex-col items-center gap-5">
+                <div class="flex items-center gap-6">
+                    <a href="https://instagram.com/hlinkinn" target="_blank" class="text-white/25 hover:text-white/80 transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
+                        </svg>
+                    </a>
+                    <a href="mailto:you@example.com" class="text-white/25 hover:text-white/80 transition-colors duration-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                            <polyline points="2,4 12,13 22,4" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="w-32 h-px bg-white/10"></div>
+
+                <nav class="flex items-center gap-8">
+                    <a href="#tracks" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">Tracks</a>
+                    <a href="#about" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">About</a>
+                    <a href="#contact" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">Contact</a>
+                </nav>
+            </div>
+
+            <!-- logo vpravo -->
+            <div class="flex justify-center mr-32">
+                <div class="w-12 h-12 rounded-xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center">
+                    <span class="text-[9px] font-bold text-white/15 uppercase tracking-widest">Logo</span>
+                </div>
+            </div>
+
         </div>
 
         <div class="grid grid-cols-3 items-center border-t border-white/[0.04] py-4">
@@ -140,28 +162,7 @@ $tracks = $trackRepo->findAll();
 
 
     <script>
-        const sections = ['tracks', 'about', 'contact'];
-        const links = document.querySelectorAll('nav a');
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    links.forEach(link => {
-                        const active = link.getAttribute('href') === `#${entry.target.id}`;
-                        link.classList.toggle('text-white/90', active);
-                        link.classList.toggle('text-white/40', !active);
-                        link.classList.toggle('hover:text-white/90', !active);
-                    });
-                }
-            });
-        }, {
-            threshold: 0.5
-        });
-
-        sections.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) observer.observe(el);
-        });
     </script>
 
 </body>
