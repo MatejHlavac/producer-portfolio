@@ -24,6 +24,24 @@ $tracks = $trackRepo->findAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Producer Portfolio</title>
     <link rel="stylesheet" href="css/output.css">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=slussen@300,400,500,700&display=swap">
+    <style>
+        body,
+        html {
+            font-family: 'Slussen', sans-serif;
+        }
+
+        @font-face {
+            font-family: 'OCR-A';
+            src: url('../assets/fonts/OCR-a___.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .ocr-a {
+            font-family: 'OCR-A', monospace;
+        }
+    </style>
 </head>
 
 <body class="bg-[#050505]">
@@ -90,64 +108,62 @@ $tracks = $trackRepo->findAll();
         </section>
     </main>
 
-    <footer class="w-full mt-32 px-6 flex flex-col gap-4">
+    <!-- Footer wrapper — obrázok pozadia presahuje za rohy footer elementu -->
+    <div class="relative w-full mt-16 pt-[23rem] pb-32 overflow-hidden">
 
-        <div class="grid grid-cols-3 items-center py-14">
+        <!-- Pozadie — celá šírka wrapperu -->
+        <img src="../assets/footer-background.png" alt="" class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] object-cover z-0">
 
-            <!-- logo vlavo -->
-            <div class="flex justify-center ml-32">
-                <div class="w-12 h-12 rounded-xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center">
-                    <span class="text-[9px] font-bold text-white/15 uppercase tracking-widest">Logo</span>
-                </div>
-            </div>
+        <!-- Tmavý overlay -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] bg-black/50 z-[5]"></div>
 
-            <!-- stred -->
-            <div class="flex flex-col items-center gap-5">
-                <div class="flex items-center gap-6">
-                    <a href="https://instagram.com/hlinkinn" target="_blank" class="text-white/25 hover:text-white/80 transition-colors duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                            <circle cx="12" cy="12" r="4" />
-                            <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-                        </svg>
-                    </a>
-                    <a href="mailto:you@example.com" class="text-white/25 hover:text-white/80 transition-colors duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <rect x="2" y="4" width="20" height="16" rx="2" />
-                            <polyline points="2,4 12,13 22,4" />
-                        </svg>
-                    </a>
-                </div>
+        <!-- Fade — vrchná hrana -->
+        <div class="absolute top-0 left-0 w-full h-48 z-[6]" style="background: linear-gradient(to bottom, #050505 0%, transparent 100%);"></div>
 
-                <div class="w-32 h-px bg-white/10"></div>
+        <!-- Footer element — matné sklo nad obrázkom -->
+        <footer class="relative z-10 mx-32">
 
-                <nav class="flex items-center gap-8">
-                    <a href="#tracks" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">Tracks</a>
-                    <a href="#about" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">About</a>
-                    <a href="#contact" class="text-[12px] font-bold text-white/30 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300">Contact</a>
+            <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-10 pt-7 pb-6">
+
+                <!-- Navigačné odkazy -->
+                <nav class="flex flex-col items-start mb-20 mt-10 leading-tight">
+                    <a href="#tracks" class="text-[2.75rem] font-thin text-white hover:text-white/55 transition-colors duration-300">tracks</a>
+                    <a href="#about" class="text-[2.75rem] font-thin text-white hover:text-white/55 transition-colors duration-300">about</a>
+                    <a href="#contact" class="inline-flex items-center gap-3 text-[2.75rem] font-thin text-white hover:text-white/55 transition-colors duration-300">contact <svg xmlns="http://www.w3.org/2000/svg" width="32" height="45" viewBox="0 0 24 30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="mb-1">
+                            <line x1="5" y1="20" x2="15.4" y2="8.6" />
+                            <polyline points="7 7 17 7 17 17" />
+                        </svg></a>
                 </nav>
-            </div>
 
-            <!-- logo vpravo -->
-            <div class="flex justify-center mr-32">
-                <div class="w-12 h-12 rounded-xl border border-white/[0.06] bg-white/[0.02] flex items-center justify-center">
-                    <span class="text-[9px] font-bold text-white/15 uppercase tracking-widest">Logo</span>
+                <!-- Spodná lišta -->
+                <div class="mt-7 pt-4 flex justify-between items-center">
+
+                    <!-- Vľavo: Instagram • Email -->
+                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">
+                        <a href="https://instagram.com/hlinkinn" target="_blank" class="hover:text-white transition-colors duration-300">Instagram</a>
+                        <span class="text-white/15">•</span>
+                        <a href="mailto:matohlavac1@gmail.com" class="hover:text-white text-transition-colors duration-300">Email</a>
+                        <span class="text-white/15">•</span>
+                        <a href="https://www.youtube.com/@hlinkin808" target="_blank" class="hover:text-white transition-colors duration-300">Youtube</a>
+                        <span class="text-white/15">•</span>
+                        <a href="https://www.beatstars.com/hlinkingpin" target="_blank" class="hover:text-white transition-colors duration-300">Beatstars</a>
+                    </div>
+
+                    <!-- Vpravo: skrytý admin -->
+                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.25em] text-white/25">
+                        <a href="login.php" class="opacity-60 hover:opacity-100 transition-opacity duration-300">Admin</a>
+                    </div>
+
                 </div>
+
             </div>
 
-        </div>
+        </footer>
 
-        <div class="grid grid-cols-3 items-center border-t border-white/[0.04] py-4">
-            <p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.25em]">© 2026</p>
+        <!-- Spodný text nad obrázkom -->
+        <p class="ocr-a absolute bottom-8 left-0 right-0 z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">Made by: Matej Hlaváč &nbsp;•&nbsp; © 2026. All rights reserved.</p>
 
-            <p class="text-[10px] text-white/15 text-center">
-                Made by: <a href="mailto:matohlavac1@gmail.com" class="hover:text-white/40 transition-colors duration-300">Matej Hlaváč</a>
-            </p>
-
-            <a href="login.php" class="text-[10px] font-bold text-white/20 uppercase tracking-[0.25em] hover:text-white/80 transition-colors duration-300 justify-self-end">Admin</a>
-        </div>
-
-    </footer>
+    </div>
 
 
 
