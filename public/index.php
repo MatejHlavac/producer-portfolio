@@ -44,7 +44,7 @@ $tracks = $trackRepo->findAll();
     </style>
 </head>
 
-<body class="bg-[#050505]">
+<body class="bg-[#050505] overflow-x-hidden">
 
     <nav class="fixed top-0 left-0 w-full z-50 px-10 py-5 flex items-center justify-between backdrop-blur-[40px] bg-white/[0.03] border-b border-white/[0.06]">
 
@@ -103,13 +103,93 @@ $tracks = $trackRepo->findAll();
 
 
 
-        <section id="contact">
+        <div class="relative mt-16 z-20">
 
-        </section>
+            <!-- Farebné boby na pozadí -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: visible;">
+                <div style="position: absolute; top: -60px; left: -40px; width: 600px; height: 600px; border-radius: 50%; background-color: #631f1e; opacity: 0.5; filter: blur(110px);"></div>
+                <div style="position: absolute; bottom: -80px; right: -30px; width: 480px; height: 480px; border-radius: 50%; background-color: #2a5a66; opacity: 0.4; filter: blur(100px);"></div>
+                <div style="position: absolute; top: 30%; right: 12%; width: 360px; height: 360px; border-radius: 50%; background-color: #1d4a55; opacity: 0.4; filter: blur(85px);"></div>
+            </div>
+
+            <section id="contact" class="max-w-2xl mx-auto py-16 relative z-10">
+                <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-10 pt-7 pb-10">
+
+                    <p class="text-[2.75rem] font-thin text-white mb-8">contact</p>
+
+                    <form id="contact-form" novalidate>
+
+                        <!-- Name + Email -->
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="group">
+                                <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Name</label>
+                                <input type="text" name="name" placeholder="Your name" required
+                                    class="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-[15px] font-thin text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors">
+                            </div>
+                            <div class="group">
+                                <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Email</label>
+                                <input type="email" name="email" placeholder="your@email.com" required
+                                    class="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-[15px] font-thin text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors">
+                            </div>
+                        </div>
+
+                        <!-- Subject -->
+                        <div class="mb-4 group">
+                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Subject</label>
+                            <div class="relative">
+                                <select name="subject" id="contact-subject" required
+                                    class="w-full appearance-none rounded-xl border border-white/[0.06] bg-white/[0.03] pl-12 pr-5 py-4 text-[15px] font-thin text-white/80 focus:outline-none focus:border-white/20 transition-colors cursor-pointer">
+                                    <option value="" class="bg-[#111]"></option>
+                                    <option value="License" class="bg-[#111]">License</option>
+                                    <option value="Collaboration" class="bg-[#111]">Collaboration</option>
+                                    <option value="Other" class="bg-[#111]">Other</option>
+                                </select>
+                                <svg class="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none text-white/35" width="14" height="8" viewBox="0 0 14 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                                    <line x1="0" y1="0" x2="7" y2="7" />
+                                    <line x1="7" y1="7" x2="14" y2="0" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Track selector — visible only for License -->
+                        <div id="track-selector" class="hidden mb-4">
+                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-3">Which tracks are you interested in?</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <?php foreach ($tracks as $track): ?>
+                                    <label class="flex items-center gap-3 cursor-pointer rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 hover:bg-white/[0.06] transition-colors has-[:checked]:border-white/20 has-[:checked]:bg-white/[0.08]">
+                                        <input type="checkbox" name="tracks[]" value="<?= htmlspecialchars($track->title) ?>" class="sr-only">
+                                        <span class="text-[15px] font-thin text-white/80 truncate"><?= htmlspecialchars($track->title) ?></span>
+                                        <span class="ml-auto shrink-0 text-[12px] font-thin text-white/30"><?= htmlspecialchars($track->bpm) ?> BPM</span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
+                        <!-- Message -->
+                        <div class="mb-6 group">
+                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Message</label>
+                            <textarea name="message" rows="5" placeholder="Your message..." required
+                                class="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-[15px] font-thin text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors resize-none"></textarea>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="flex justify-end">
+                            <button type="submit" id="contact-submit"
+                                class="text-[15px] font-thin text-white/60 border border-white/[0.12] rounded-xl px-6 py-4 hover:text-white/90 hover:border-white/25 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                                Submit
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </section>
+
+        </div>
     </main>
 
     <!-- Footer wrapper — obrázok pozadia presahuje za rohy footer elementu -->
-    <div class="relative w-full mt-16 pt-[23rem] pb-32 overflow-hidden">
+    <div class="relative w-full mt-[30px] pt-[23rem] pb-32 overflow-hidden">
 
         <!-- Pozadie — celá šírka wrapperu -->
         <img src="../assets/footer-background.png" alt="" class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] object-cover z-0">
@@ -177,8 +257,64 @@ $tracks = $trackRepo->findAll();
 
 
 
-    <script>
+    <!-- Feedback toast -->
+    <div id="contact-feedback" class="opacity-0 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] text-[15px] font-thin border border-white/[0.12] rounded-xl px-8 py-4 pointer-events-none backdrop-blur-[40px] bg-white/[0.06] transition-opacity duration-500"></div>
 
+    <script>
+        // Podmienečný track selector — zobrazí sa len pri predmete "Licencia"
+        const subjectEl = document.getElementById('contact-subject');
+        const trackSelector = document.getElementById('track-selector');
+
+        function syncTrackSelector() {
+            trackSelector.classList.toggle('hidden', subjectEl.value !== 'License');
+        }
+
+        subjectEl.addEventListener('change', syncTrackSelector);
+
+        // Inicializácia pri načítaní — rieši obnovu stavu formulára Chromom
+        syncTrackSelector();
+
+        // Async odoslanie kontaktného formulára
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('contact-submit');
+            const feedback = document.getElementById('contact-feedback');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const formData = new FormData(e.target);
+
+            function showFeedback(message, success) {
+                feedback.textContent = message;
+                feedback.classList.remove('text-green-400', 'text-red-400', 'opacity-0');
+                feedback.classList.add(success ? 'text-green-400' : 'text-red-400', 'opacity-100');
+                setTimeout(() => {
+                    feedback.classList.remove('opacity-100');
+                    feedback.classList.add('opacity-0');
+                }, 1500);
+            }
+
+            try {
+                const res = await fetch('api/send_contact.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                showFeedback(data.message, data.success);
+
+                if (data.success) {
+                    e.target.reset();
+                    trackSelector.classList.add('hidden');
+                }
+            } catch {
+                showFeedback('Network error. Please try again.', false);
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Submit';
+        });
     </script>
 
 </body>
