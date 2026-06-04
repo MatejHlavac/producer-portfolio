@@ -41,6 +41,18 @@ $tracks = $trackRepo->findAll();
         .ocr-a {
             font-family: 'OCR-A', monospace;
         }
+
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.65;
+            }
+        }
     </style>
 </head>
 
@@ -61,7 +73,124 @@ $tracks = $trackRepo->findAll();
     </nav>
 
     <main>
-        <section id="hero">
+        <section id="hero" class="relative" style="height:100vh;overflow:visible;">
+
+            <!-- Obsah hero sekcie -->
+            <div class="relative z-10 flex flex-col items-center justify-center px-10" style="height:100%;padding-bottom:80px;">
+                <h1 class="text-[5rem] sm:text-[7rem] lg:text-[9rem] font-thin text-white leading-none tracking-tight mb-8 mt-32">hlinkinn</h1>
+                <p class="text-[11px] font-bold uppercase tracking-[0.25em] text-white/30">Beats &nbsp;•&nbsp; Productions &nbsp;•&nbsp; Collaborations</p>
+
+                <!-- Audio waveform ikona s pulzujúcou glow -->
+                <div class="relative mt-32">
+                    <div class="absolute" style="width:360px;height:250px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#a83030 0%,#631f1e 35%,transparent 70%);filter:blur(50px);animation:glowPulse 3s ease-in-out infinite;"></div>
+                    <svg class="relative text-white/80" width="126" height="91" viewBox="0 0 126 91" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="5" y1="42.3333" x2="5" y2="48.6666" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                        <line x1="23.9854" y1="32.2222" x2="23.9854" y2="58.7778" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                        <line x1="42.9712" y1="38.4443" x2="42.9712" y2="52.5554" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                        <line x1="61.957" y1="20.5557" x2="61.957" y2="70.4446" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                        <line x1="80.9424" y1="27.5557" x2="80.9424" y2="63.4446" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                        <line x1="99.9282" y1="36.1111" x2="99.9282" y2="54.8889" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                        <line x1="118.914" y1="42.3333" x2="118.914" y2="48.6666" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Vlnová animácia — na spodku hero sekcie -->
+            <div class="absolute bottom-0 left-0 w-full z-10 pointer-events-none">
+                <svg id="waveform-svg" viewBox="0 -115 1280 130" preserveAspectRatio="xMinYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+
+                    <style>
+                        #waveform-svg {
+                            height: 450px;
+                        }
+
+                        @media (max-width: 767px) {
+                            #waveform-svg {
+                                height: 240px;
+                            }
+                        }
+                    </style>
+
+                    <!-- teal 1 — statická -->
+                    <path opacity="0.8" d="M1280 78.5C1280 78.5 1071.33 78.5 934.01 78.5C702.238 78.5 706.44 127 629.424 127C552.409 127 537.151 55.5 436.886 55.5C336.621 55.5 198.547 55.5 198.547 55.5L0 55.5" stroke="#2a5a66" stroke-width="2" />
+
+                    <!-- teal 2 — statická -->
+                    <path opacity="0.8" d="M-1 23.8557C-1 23.8557 167.675 23 309.945 23C452.215 23 459.582 128 557.738 128C655.893 128 706.003 43.0005 851.395 43.0005C812.022 43.0005 1279 43 1279 43" stroke="#2a5a66" stroke-width="2" />
+
+                    <!-- karmínová — animovaná JavaScriptom -->
+                    <path id="waveform-2" d="M -1,61.3725 C 31.025,61.3725 31.025,34.09 63.05,34.09 C 255.2,34.09 255.2,87.59 447.35,87.59 C 639.5,87.59 639.5,83.17 831.65,83.17 C 1023.8,83.17 1023.8,30.6 1215.95,30.6 C 1247.975,30.6 1247.975,61.3725 1280,61.3725" stroke="url(#waveGradient)" stroke-width="2" />
+
+                    <defs>
+                        <linearGradient id="waveGradient" x1="-101.166" y1="51.3104" x2="1264.39" y2="51.3104" gradientUnits="userSpaceOnUse">
+                            <stop offset="0.019" stop-color="#2a5a66" stop-opacity="0" />
+                            <stop offset="0.183" stop-color="#2a5a66" stop-opacity="0" />
+                            <stop offset="0.485" stop-color="#631f1e" />
+                            <stop offset="0.587" stop-color="#7a2520" />
+                            <stop offset="0.708" stop-color="#2a5a66" />
+                            <stop offset="0.997" stop-color="#2a5a66" stop-opacity="0" />
+                        </linearGradient>
+                    </defs>
+
+                </svg>
+            </div>
+
+            <script>
+                const waveEl = document.getElementById('waveform-2');
+                const leftStaticX = -1;
+                const rightStaticX = 1280;
+                const animationSpan = rightStaticX - leftStaticX;
+                const animateStartX = leftStaticX + animationSpan * 0.05;
+                const animateEndX = rightStaticX - animationSpan * 0.05;
+
+                const waveCfg = {
+                    frequency: 0.8,
+                    amplitude: 36,
+                    segments: 3,
+                    speed: 0.006,
+                    baseY: 61.3725
+                };
+                let progress = 0;
+
+                function generateWavePoints(cfg, prog) {
+                    const points = [];
+                    const interval = (animateEndX - animateStartX) / cfg.segments;
+                    points.push({
+                        x: leftStaticX,
+                        y: 0
+                    });
+                    for (let i = 0; i <= cfg.segments; i++) {
+                        const x = animateStartX + i * interval;
+                        const y = cfg.amplitude * Math.sin((i / cfg.segments) * Math.PI * 2 * cfg.frequency + prog);
+                        points.push({
+                            x,
+                            y
+                        });
+                    }
+                    points.push({
+                        x: rightStaticX,
+                        y: 0
+                    });
+                    return points;
+                }
+
+                function updateWavePath(el, points, baseY) {
+                    let path = `M ${points[0].x},${baseY + points[0].y} `;
+                    for (let i = 1; i < points.length; i++) {
+                        const prev = points[i - 1];
+                        const curr = points[i];
+                        const cx = (prev.x + curr.x) / 2;
+                        path += `C ${cx},${baseY + prev.y} ${cx},${baseY + curr.y} ${curr.x},${baseY + curr.y} `;
+                    }
+                    el.setAttribute('d', path);
+                }
+
+                (function loop() {
+                    progress += waveCfg.speed;
+                    const points = generateWavePoints(waveCfg, progress);
+                    updateWavePath(waveEl, points, waveCfg.baseY);
+                    requestAnimationFrame(loop);
+                })();
+            </script>
 
         </section>
 
@@ -153,7 +282,7 @@ $tracks = $trackRepo->findAll();
 
                         <!-- Track selector — visible only for License -->
                         <div id="track-selector" class="hidden mb-4">
-                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-3">Which tracks are you interested in?</label>
+                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-3">Choose tracks</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <?php foreach ($tracks as $track): ?>
                                     <label class="flex items-center gap-3 cursor-pointer rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 hover:bg-white/[0.06] transition-colors has-[:checked]:border-white/20 has-[:checked]:bg-white/[0.08]">
