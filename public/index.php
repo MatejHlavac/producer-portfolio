@@ -42,6 +42,63 @@ $tracks = $trackRepo->findAll();
             font-family: 'OCR-A', monospace;
         }
 
+        #main-nav {
+            transition: transform 0.5s ease;
+        }
+
+        #main-nav.nav-hidden {
+            transform: translateY(calc(-100% - 60px));
+            pointer-events: none;
+        }
+
+        #menu-toggle {
+            position: relative;
+            isolation: isolate;
+        }
+
+        #menu-toggle::before {
+            content: '';
+            position: absolute;
+            inset: -18px -28px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+            z-index: -1;
+        }
+
+        #icon-menu,
+        #icon-close {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        #icon-menu {
+            opacity: 0.5;
+            transform: rotate(0deg) scale(1);
+        }
+
+        #icon-menu.menu-active {
+            opacity: 0;
+            transform: rotate(90deg) scale(0.5);
+        }
+
+        #menu-toggle:hover #icon-menu:not(.menu-active) {
+            opacity: 1;
+        }
+
+        #icon-close {
+            position: absolute;
+            opacity: 0;
+            transform: rotate(-90deg) scale(0.5);
+        }
+
+        #icon-close.menu-active {
+            opacity: 1;
+            transform: rotate(0deg) scale(1);
+        }
+
         @keyframes glowPulse {
 
             0%,
@@ -58,17 +115,23 @@ $tracks = $trackRepo->findAll();
 
 <body class="bg-[#050505] overflow-x-hidden">
 
-    <nav class="fixed top-0 left-0 w-full z-50 px-10 py-5 flex items-center justify-between backdrop-blur-[40px] bg-white/[0.03] border-b border-white/[0.06]">
+    <!-- Navbar -->
+    <nav id="main-nav" class="fixed top-10 z-50" style="left: calc(10rem + 50px);">
 
-        <!-- Logo -->
-        <a href="#hero" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">Producer Portfolio</a>
-
-        <!-- Nav Links -->
-        <div id="main-navigation" class="flex items-center gap-8">
-            <a href="#tracks" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">Tracks</a>
-            <a href="#about" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">About</a>
-            <a href="#contact" class="text-[12px] font-bold text-white/40 uppercase tracking-[0.25em] hover:text-white/90 transition-colors duration-300">Contact</a>
-        </div>
+        <!-- Hamburger ikona -->
+        <button id="menu-toggle" class="group p-2 flex items-center justify-center">
+            <!-- Wrapper — obe ikony naskladané na seba -->
+            <div class="relative" style="width:22px;height:14px;">
+                <svg id="icon-menu" width="22" height="10" viewBox="-1 0 18 8" fill="none" style="position:absolute;top:2px;left:-1px;">
+                    <line x1="-1" y1="1" x2="17" y2="1" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="-1" y1="7" x2="17" y2="7" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <svg id="icon-close" width="14" height="14" viewBox="0 0 14 14" fill="none" style="top:0;left:1px;">
+                    <line x1="1" y1="1" x2="13" y2="13" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="13" y1="1" x2="1" y2="13" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+            </div>
+        </button>
 
     </nav>
 
@@ -386,6 +449,8 @@ $tracks = $trackRepo->findAll();
 
 
 
+    <!-- TODO: overlay menu redesign -->
+
     <!-- Feedback toast -->
     <div id="contact-feedback" class="opacity-0 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] text-[15px] font-thin border border-white/[0.12] rounded-xl px-8 py-4 pointer-events-none backdrop-blur-[40px] bg-white/[0.06] transition-opacity duration-500"></div>
 
@@ -444,7 +509,24 @@ $tracks = $trackRepo->findAll();
             btn.disabled = false;
             btn.textContent = 'Submit';
         });
+
+        // TODO: overlay menu JS (po redesigne)
+
+        // Skryje/zobrazí navbar pri scrollovaní
+        const mainNav = document.getElementById('main-nav');
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                mainNav.classList.add('nav-hidden');
+            } else {
+                mainNav.classList.remove('nav-hidden');
+            }
+            lastScrollY = currentScrollY;
+        });
     </script>
+
 
 </body>
 
