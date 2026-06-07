@@ -99,6 +99,52 @@ $tracks = $trackRepo->findAll();
             transform: rotate(0deg) scale(1);
         }
 
+        #nav-links {
+            position: fixed;
+            top: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 1.6rem;
+            opacity: 0;
+            z-index: 50;
+            isolation: isolate;
+            transition: opacity 0.35s ease, transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        #nav-links a {
+            font-size: 21px;
+            transition: color 0.3s ease;
+        }
+
+        #nav-links a:hover {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        #nav-links::before {
+            content: '';
+            position: absolute;
+            inset: -50px -80px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+            z-index: -1;
+        }
+
+        #nav-links.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #nav-links.nav-hidden {
+            transform: translateX(-50%) translateY(calc(-100% - 60px));
+        }
+
         @keyframes glowPulse {
 
             0%,
@@ -133,6 +179,13 @@ $tracks = $trackRepo->findAll();
             </div>
         </button>
 
+    </nav>
+
+    <!-- Nav linky — samostatný nav, aby position:fixed nespadlo pod transform rodiča -->
+    <nav id="nav-links" aria-label="Section navigation">
+        <a href="#tracks" class="font-thin leading-none text-white/90 whitespace-nowrap">tracks</a>
+        <a href="#about" class="font-thin leading-none text-white/90 whitespace-nowrap">about</a>
+        <a href="#contact" class="font-thin leading-none text-white/90 whitespace-nowrap">contact</a>
     </nav>
 
     <main>
@@ -510,18 +563,45 @@ $tracks = $trackRepo->findAll();
             btn.textContent = 'Submit';
         });
 
-        // TODO: overlay menu JS (po redesigne)
+        // Hamburger toggle — otvorí/zatvorí nav linky
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        const iconMenu = document.getElementById('icon-menu');
+        const iconClose = document.getElementById('icon-close');
+
+        menuToggle.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('open');
+            iconMenu.classList.toggle('menu-active', isOpen);
+            iconClose.classList.toggle('menu-active', isOpen);
+        });
+
+        // Klik na link zatvorí menu
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('open');
+                iconMenu.classList.remove('menu-active');
+                iconClose.classList.remove('menu-active');
+            });
+        });
 
         // Skryje/zobrazí navbar pri scrollovaní
         const mainNav = document.getElementById('main-nav');
         let lastScrollY = window.scrollY;
 
+        function closeMenu() {
+            navLinks.classList.remove('open');
+            iconMenu.classList.remove('menu-active');
+            iconClose.classList.remove('menu-active');
+        }
+
         window.addEventListener('scroll', () => {
             const currentScrollY = window.scrollY;
             if (currentScrollY > lastScrollY && currentScrollY > 80) {
                 mainNav.classList.add('nav-hidden');
+                navLinks.classList.add('nav-hidden');
             } else {
                 mainNav.classList.remove('nav-hidden');
+                navLinks.classList.remove('nav-hidden');
             }
             lastScrollY = currentScrollY;
         });
