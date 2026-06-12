@@ -107,16 +107,20 @@ $tracks = $trackRepo->findAll();
             display: flex;
             align-items: center;
             gap: 1.6rem;
-            opacity: 0;
             z-index: 50;
             isolation: isolate;
-            transition: opacity 0.35s ease, transform 0.5s ease;
+            transition: transform 0.5s ease;
             pointer-events: none;
         }
 
         #nav-links a {
             font-size: 21px;
-            transition: color 0.3s ease;
+            opacity: 0;
+            transition: color 0.3s ease, opacity 0.35s ease;
+        }
+
+        #nav-links.open a {
+            opacity: 1;
         }
 
         #nav-links a:hover {
@@ -127,17 +131,28 @@ $tracks = $trackRepo->findAll();
             content: '';
             position: absolute;
             inset: -50px -80px;
+            opacity: 0;
+            transition: opacity 0.28s ease;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             background: rgba(255, 255, 255, 0.03);
             border-radius: 20px;
-            mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
+            /* Two crossed linear masks: solid across the full width (all three links),
+               fading softly only near the horizontal ends and the top/bottom edges. */
+            mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%),
+                linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+            mask-composite: intersect;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%),
+                linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
+            -webkit-mask-composite: source-in;
             z-index: -1;
         }
 
-        #nav-links.open {
+        #nav-links.open::before {
             opacity: 1;
+        }
+
+        #nav-links.open {
             pointer-events: auto;
         }
 
@@ -312,43 +327,149 @@ $tracks = $trackRepo->findAll();
 
 
 
-        <section id="tracks" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto px-10">
-            <?php foreach ($tracks as $track): ?>
-                <div class="group overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03] transition-all duration-300 hover:bg-white/[0.05]">
+        <section id="tracks" class="max-w-6xl mx-auto px-10 mt-64">
 
-                    <div class="h-32 w-full" style="background: linear-gradient(135deg, #1a0a0a 0%, #3d1010 40%, #0d1a2e 100%);"></div>
+            <p class="text-[2.75rem] font-thin text-white mb-20">tracks</p>
 
-                    <div class="px-4 py-4">
-                        <p class="mb-1 truncate text-[15px] font-medium text-white/90">
-                            <?= htmlspecialchars($track->title) ?>
-                        </p>
-                        <p class="mb-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">
-                            <?= htmlspecialchars($track->genre) ?>
-                        </p>
-                        <div class="flex items-center gap-2">
+            <div class="flex flex-col gap-3">
+                <?php foreach ($tracks as $track): ?>
+                    <div class="group flex items-center gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 transition-all duration-300 hover:bg-white/[0.05]">
+
+                        <!-- Play ikona — príprava na budúci prehrávač -->
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
+                            <svg width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-70 transition-opacity duration-300 group-hover:opacity-100">
+                                <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+
+                        <!-- Názov + žáner -->
+                        <div class="min-w-0 flex-1">
+                            <p class="truncate text-[16px] font-medium text-white/90">
+                                <?= htmlspecialchars($track->title) ?>
+                            </p>
+                            <p class="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">
+                                <?= htmlspecialchars($track->genre) ?>
+                            </p>
+                        </div>
+
+                        <!-- BPM -->
+                        <span class="shrink-0 font-mono text-[13px] text-white/45 transition-colors duration-300 group-hover:text-white/70">
+                            <?= htmlspecialchars($track->bpm) ?> BPM
+                        </span>
+
+                        <!-- Dĺžka — doplní JavaScript z audio metadát -->
+                        <div class="flex w-14 shrink-0 items-center justify-end gap-1.5 text-white/40">
                             <svg class="h-3.5 w-3.5 text-white/20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
                             </svg>
-                            <span class="font-mono text-[11px] text-white/30 transition-colors duration-300 group-hover:text-white/60">
-                                <?= htmlspecialchars($track->bpm) ?> BPM
-                            </span>
+                            <span class="track-duration font-mono text-[12px] tabular-nums" data-src="../<?= htmlspecialchars($track->file_path) ?>">--:--</span>
                         </div>
+
                     </div>
+                <?php endforeach; ?>
+            </div>
 
+            <script>
+                // Dĺžka tracku — prehliadač načíta iba audio metadáta a doplní mm:ss.
+                // Žiadny PHP parser ani knižnica: reálnu dĺžku reportuje samotný prehrávač.
+                document.querySelectorAll('.track-duration').forEach(el => {
+                    const audio = new Audio();
+                    audio.preload = 'metadata';
+                    audio.src = el.dataset.src;
+
+                    audio.addEventListener('loadedmetadata', () => {
+                        const total = Math.floor(audio.duration);
+                        const min = Math.floor(total / 60);
+                        const sec = String(total % 60).padStart(2, '0');
+                        el.textContent = `${min}:${sec}`;
+                    });
+
+                    audio.addEventListener('error', () => {
+                        el.textContent = '--:--';
+                    });
+                });
+            </script>
+
+        </section>
+
+
+
+        <section id="about" class="max-w-6xl mx-auto px-10 mt-72 mb-16">
+
+            <p class="text-[2.75rem] font-thin text-white mb-20">about</p>
+
+            <!-- Riadok 1 — producer: fotka vľavo, text vpravo -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
+
+                <!-- Priestor pre fotku — portrét -->
+                <div class="relative aspect-[4/5] w-full max-w-[280px] mx-auto overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03]">
+                    <div class="absolute inset-0" style="background: linear-gradient(135deg, #1a0a0a 0%, #3d1010 40%, #0d1a2e 100%);"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-white/25">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="2" />
+                            <circle cx="9" cy="10" r="2" />
+                            <path d="M3 17l5-4 4 3 3-2 6 5" />
+                        </svg>
+                    </div>
+                    <!-- Reálna fotka: <img src="../assets/about-producer.jpg" alt="" class="absolute inset-0 w-full h-full object-cover"> -->
                 </div>
-            <?php endforeach; ?>
+
+                <!-- Textový priestor -->
+                <div class="space-y-6 text-[17px] font-thin leading-[1.9] text-white/55">
+                    <p>Some text about the producer goes here — a short intro about who they are, the sound they craft and the artists they work with. Replace this copy with the real bio.</p>
+                </div>
+
+            </div>
+
+            <!-- Riadok 2 — label: text vľavo, fotka vpravo (na mobile fotka prvá) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                <!-- Textový priestor -->
+                <div class="order-2 lg:order-1 space-y-6 text-[17px] font-thin leading-[1.9] text-white/55">
+                    <p>Some text about the label goes here — its story, roster and what it stands for in the scene. Replace this copy with the real description.</p>
+                </div>
+
+                <!-- Priestor pre fotku — landscape -->
+                <div class="order-1 lg:order-2 relative aspect-[3/2] w-full max-w-[440px] mx-auto overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.03]">
+                    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0d1a2e 0%, #16323a 45%, #1a0a0a 100%);"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-white/25">
+                        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="5" width="18" height="14" rx="2" />
+                            <circle cx="9" cy="10" r="2" />
+                            <path d="M3 17l5-4 4 3 3-2 6 5" />
+                        </svg>
+                    </div>
+                    <!-- Reálna fotka: <img src="../assets/about-label.jpg" alt="" class="absolute inset-0 w-full h-full object-cover"> -->
+                </div>
+
+            </div>
+
+            <!-- Socials — horizontálne pod label časťou -->
+            <div class="flex items-center justify-center gap-24 mt-28">
+                <a href="https://instagram.com/hlinkinn" target="_blank" aria-label="Instagram" class="group relative h-14 w-14">
+                    <img src="../assets/icons/ig_icon_base.png" alt="Instagram" class="absolute inset-0 h-full w-full object-contain opacity-60 group-hover:opacity-0 transition-opacity duration-300">
+                    <img src="../assets/icons/ig_icon_hover.png" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </a>
+                <a href="https://open.spotify.com/" target="_blank" aria-label="Spotify" class="group h-14 w-14">
+                    <span class="block h-full w-full bg-white/60 group-hover:bg-[#1DB954] transition-colors duration-300"
+                        style="-webkit-mask: url('../assets/icons/spotify_icon_base.png') center/contain no-repeat; mask: url('../assets/icons/spotify_icon_base.png') center/contain no-repeat;"></span>
+                </a>
+                <a href="https://www.youtube.com/@hlinkin808" target="_blank" aria-label="YouTube" class="group h-14 w-14">
+                    <span class="block h-full w-full bg-white/60 group-hover:bg-[#db3030] transition-colors duration-300"
+                        style="-webkit-mask: url('../assets/icons/yt_icon_base.png') center/contain no-repeat; mask: url('../assets/icons/yt_icon_base.png') center/contain no-repeat;"></span>
+                </a>
+                <a href="https://www.beatstars.com/hlinkingpin" target="_blank" aria-label="Beatstars" class="group relative h-14 w-14">
+                    <img src="../assets/icons/beatstars_icon_base.png" alt="Beatstars" class="absolute inset-0 h-full w-full object-contain opacity-60 group-hover:opacity-0 transition-opacity duration-300">
+                    <img src="../assets/icons/beatstars_icon_hovered.png" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                </a>
+            </div>
+
         </section>
 
 
 
-        <section id="about">
-
-        </section>
-
-
-
-        <div class="relative mt-16 z-20">
+        <div class="relative mt-80 z-20">
 
             <!-- Farebné boby na pozadí -->
             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: visible;">
@@ -575,12 +696,17 @@ $tracks = $trackRepo->findAll();
             iconClose.classList.toggle('menu-active', isOpen);
         });
 
-        // Klik na link zatvorí menu
+        // Klik na link NEcháva menu otvorené — počas plynulého scrollu z kliknutia
+        // navyše dočasne potlačíme automatické skrytie navbaru pri scrollovaní.
+        let suppressScrollHide = false;
+        let suppressTimer = null;
         navLinks.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                navLinks.classList.remove('open');
-                iconMenu.classList.remove('menu-active');
-                iconClose.classList.remove('menu-active');
+                suppressScrollHide = true;
+                clearTimeout(suppressTimer);
+                suppressTimer = setTimeout(() => {
+                    suppressScrollHide = false;
+                }, 1000);
             });
         });
 
@@ -588,20 +714,16 @@ $tracks = $trackRepo->findAll();
         const mainNav = document.getElementById('main-nav');
         let lastScrollY = window.scrollY;
 
-        function closeMenu() {
-            navLinks.classList.remove('open');
-            iconMenu.classList.remove('menu-active');
-            iconClose.classList.remove('menu-active');
-        }
-
         window.addEventListener('scroll', () => {
             const currentScrollY = window.scrollY;
-            if (currentScrollY > lastScrollY && currentScrollY > 80) {
-                mainNav.classList.add('nav-hidden');
-                navLinks.classList.add('nav-hidden');
-            } else {
-                mainNav.classList.remove('nav-hidden');
-                navLinks.classList.remove('nav-hidden');
+            if (!suppressScrollHide) {
+                if (currentScrollY > lastScrollY && currentScrollY > 80) {
+                    mainNav.classList.add('nav-hidden');
+                    navLinks.classList.add('nav-hidden');
+                } else {
+                    mainNav.classList.remove('nav-hidden');
+                    navLinks.classList.remove('nav-hidden');
+                }
             }
             lastScrollY = currentScrollY;
         });
