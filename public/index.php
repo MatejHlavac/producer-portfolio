@@ -449,10 +449,14 @@ $structuredData = [
 
             <div class="flex flex-col gap-3">
                 <?php foreach ($tracks as $track): ?>
-                    <div class="track-row group flex items-center gap-4 sm:gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 sm:px-6 sm:py-5 transition-all duration-300 hover:bg-white/[0.05]" data-bpm="<?= (int)$track->bpm ?>">
+                    <div class="track-row group flex items-center gap-4 sm:gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 sm:px-6 sm:py-5 transition-all duration-300 hover:bg-white/[0.05]"
+                        data-bpm="<?= (int)$track->bpm ?>"
+                        data-src="../<?= htmlspecialchars($track->file_path) ?>"
+                        data-title="<?= htmlspecialchars($track->title) ?>"
+                        data-genre="<?= htmlspecialchars($track->genre) ?>">
 
                         <!-- Play ikona — príprava na budúci prehrávač -->
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
+                        <div class=" flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
                             <svg width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-70 transition-opacity duration-300 group-hover:opacity-100">
                                 <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
                             </svg>
