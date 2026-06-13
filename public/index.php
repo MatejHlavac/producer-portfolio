@@ -42,6 +42,24 @@ $tracks = $trackRepo->findAll();
             font-family: 'OCR-A', monospace;
         }
 
+        /* Hide the up/down spinner arrows on number inputs */
+        .no-spinner::-webkit-inner-spin-button,
+        .no-spinner::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .no-spinner {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        /* Placeholder uses the page font (Slussen), not the mono of typed values */
+        .no-spinner::placeholder {
+            font-family: 'Slussen', sans-serif;
+            font-weight: 300;
+        }
+
         #main-nav {
             transition: transform 0.5s ease;
         }
@@ -177,7 +195,7 @@ $tracks = $trackRepo->findAll();
 <body class="bg-[#050505] overflow-x-hidden">
 
     <!-- Navbar -->
-    <nav id="main-nav" class="fixed top-10 z-50" style="left: calc(10rem + 50px);">
+    <nav id="main-nav" class="fixed top-10 z-50" style="left: 6rem;">
 
         <!-- Hamburger ikona -->
         <button id="menu-toggle" class="group p-2 flex items-center justify-center">
@@ -329,11 +347,25 @@ $tracks = $trackRepo->findAll();
 
         <section id="tracks" class="max-w-6xl mx-auto px-10 mt-64">
 
-            <p class="text-[2.75rem] font-thin text-white mb-20">tracks</p>
+            <p class="text-[2.75rem] font-thin text-white mb-10">tracks</p>
+
+            <!-- BPM filter — client-side, no reload (filters the already-rendered rows) -->
+            <div class="mb-20 flex flex-wrap items-center justify-center gap-3.5">
+                <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">BPM</span>
+                <input id="bpm-min" type="number" min="0" inputmode="numeric" placeholder="from"
+                    class="no-spinner w-24 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 font-mono text-[14px] text-white/80 placeholder-white/15 outline-none transition-colors duration-300 focus:border-white/25" />
+                <span class="text-white/25">–</span>
+                <input id="bpm-max" type="number" min="0" inputmode="numeric" placeholder="to"
+                    class="no-spinner w-24 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 font-mono text-[14px] text-white/80 placeholder-white/15 outline-none transition-colors duration-300 focus:border-white/25" />
+                <button id="bpm-reset" type="button"
+                    class="ml-1 rounded-xl border border-white/[0.06] px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/35 transition-colors duration-300 hover:border-white/25 hover:text-white/70">
+                    Reset
+                </button>
+            </div>
 
             <div class="flex flex-col gap-3">
                 <?php foreach ($tracks as $track): ?>
-                    <div class="group flex items-center gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 transition-all duration-300 hover:bg-white/[0.05]">
+                    <div class="track-row group flex items-center gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 transition-all duration-300 hover:bg-white/[0.05]" data-bpm="<?= (int)$track->bpm ?>">
 
                         <!-- Play ikona — príprava na budúci prehrávač -->
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
@@ -370,7 +402,47 @@ $tracks = $trackRepo->findAll();
                 <?php endforeach; ?>
             </div>
 
+            <!-- Shown when no track matches the selected range -->
+            <p id="tracks-empty" class="mt-12 hidden text-center text-[15px] text-white/50">
+                No tracks in this BPM range.
+            </p>
+
             <script>
+                // BPM filter — client-side. Shows/hides the already-rendered rows
+                // based on the range from two number inputs. No reload, no DB query.
+                (function() {
+                    const minInput = document.getElementById('bpm-min');
+                    const maxInput = document.getElementById('bpm-max');
+                    const resetBtn = document.getElementById('bpm-reset');
+                    const rows = document.querySelectorAll('.track-row');
+                    const emptyMsg = document.getElementById('tracks-empty');
+
+                    function applyFilter() {
+                        // Empty field = no bound (NaN → 0 lower, Infinity upper).
+                        const min = Number.isNaN(minInput.valueAsNumber) ? 0 : minInput.valueAsNumber;
+                        const max = Number.isNaN(maxInput.valueAsNumber) ? Infinity : maxInput.valueAsNumber;
+
+                        let visible = 0;
+                        rows.forEach(row => {
+                            const bpm = Number(row.dataset.bpm);
+                            const inRange = bpm >= min && bpm <= max;
+                            row.classList.toggle('hidden', !inRange);
+                            if (inRange) visible++;
+                        });
+
+                        // Show the message only when rows exist but none passed the filter.
+                        emptyMsg.classList.toggle('hidden', visible !== 0 || rows.length === 0);
+                    }
+
+                    minInput.addEventListener('input', applyFilter);
+                    maxInput.addEventListener('input', applyFilter);
+                    resetBtn.addEventListener('click', () => {
+                        minInput.value = '';
+                        maxInput.value = '';
+                        applyFilter();
+                    });
+                })();
+
                 // Dĺžka tracku — prehliadač načíta iba audio metadáta a doplní mm:ss.
                 // Žiadny PHP parser ani knižnica: reálnu dĺžku reportuje samotný prehrávač.
                 document.querySelectorAll('.track-duration').forEach(el => {
