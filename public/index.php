@@ -769,8 +769,64 @@ $structuredData = [
         </footer>
 
         <!-- Spodný text nad obrázkom -->
-        <p class="ocr-a absolute bottom-8 left-0 right-0 z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">© 2026. All rights reserved.<br>Made by: Matej Hlaváč</p>
+        <p class="ocr-a absolute bottom-28 left-0 right-0 z-10 flex justify-center items-center gap-x-16 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+            <span>© 2026. All rights reserved.</span>
+            <span>Made by: Matej Hlaváč</span>
+        </p>
 
+    </div>
+
+
+
+
+
+    <!-- Sticky audio player — plávajúci zaoblený box, vycentrovaný, vždy navrchu -->
+    <div id="player-bar"
+        class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999] w-[92%] sm:w-1/2
+           rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] shadow-2xl
+           transition-transform duration-500">
+        <div class="px-4 sm:px-6 py-4 flex items-center gap-4 sm:gap-6">
+
+            <!-- Play / pause — JS prepína .hidden medzi oboma ikonami -->
+            <button id="player-toggle" aria-label="Play/Pause"
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] hover:bg-white/[0.16] transition-colors">
+
+                <!-- Play ikona -->
+                <svg id="player-icon-play" width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-80">
+                    <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
+                </svg>
+
+                <!-- Pause ikona — skrytá kým track nehrá -->
+                <svg id="player-icon-pause" width="12" height="14" viewBox="0 0 12 14" class="hidden opacity-80">
+                    <rect x="1.5" y="1" width="3" height="12" rx="1" fill="white" />
+                    <rect x="7.5" y="1" width="3" height="12" rx="1" fill="white" />
+                </svg>
+            </button>
+
+            <!-- Názov tracku -->
+            <div class="min-w-0 w-24 sm:w-32 shrink-0">
+                <p id="player-title" class="truncate text-[15px] font-medium text-white/90">—</p>
+            </div>
+
+            <!-- Aktuálny čas — vľavo od slideru -->
+            <span id="player-current" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
+
+            <!-- Seek slider -->
+            <input id="player-seek" type="range" min="0" max="100" value="0"
+                class="flex-1 cursor-pointer accent-white/80">
+
+            <!-- Celková dĺžka — vpravo od slideru -->
+            <span id="player-duration" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
+
+            <!-- Zavrieť -->
+            <button id="player-close" aria-label="Close player"
+                class="shrink-0 text-white/35 hover:text-white/80 transition-colors">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+        </div>
     </div>
 
 
