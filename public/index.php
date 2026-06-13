@@ -14,13 +14,9 @@ $trackRepo = new TrackRepository($db);
 
 $tracks = $trackRepo->findAll();
 
-// Plná produkčná URL stránky — používa sa v canonical a Open Graph značkách.
-// Pri nasadení na reálnu doménu sem zadaj skutočnú adresu (bez lomky na konci).
+
 $siteUrl = 'https://hlinkinn.com';
 
-// Štruktúrované dáta o interpretovi (JSON-LD). Vyhľadávače ich čítajú, aby
-// pochopili, že stránka patrí hudobnému producentovi a kde ho nájdu na sieťach.
-// Pole necháme zostaviť cez json_encode, aby bol výstup vždy platné JSON.
 $structuredData = [
     '@context' => 'https://schema.org',
     '@type'    => 'MusicGroup',
@@ -64,8 +60,8 @@ $structuredData = [
 
     <!-- Štruktúrované dáta (JSON-LD) — zostavené z $structuredData (pozri vrch súboru) -->
     <script type="application/ld+json">
-<?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
-</script>
+        <?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+    </script>
 
     <link rel="preconnect" href="https://api.fontshare.com">
     <link rel="stylesheet" href="css/output.css">
@@ -300,15 +296,24 @@ $structuredData = [
         <section id="hero" class="relative" style="height:100vh;overflow:visible;">
 
             <!-- Obsah hero sekcie -->
-            <div class="relative z-10 flex flex-col items-center justify-center px-6 sm:px-10" style="height:100%;padding-bottom:80px;">
-                <h1 class="text-[3.5rem] sm:text-[7rem] lg:text-[9rem] font-thin text-white leading-none tracking-tight mb-8 mt-48 sm:mt-32 translate-y-16 sm:translate-y-0">hlinkinn</h1>
+            <div class="relative flex flex-col items-center justify-center px-6 sm:px-10" style="height:100%;padding-bottom:80px;">
+                <!-- Meno + label ako skupina. translate-y posunie skupinu nižšie BEZ reflowu,
+                     takže CTA ani waveform sa nehnú. Logo je absolútne (mimo toku), aby jeho
+                     veľkosť netlačila CTA nadol. -->
+                <div class="relative flex flex-col items-center translate-y-12 sm:translate-y-12">
+                    <h1 class="text-[3.5rem] sm:text-[7rem] lg:text-[9rem] font-thin text-white leading-none tracking-tight mt-48 sm:mt-32">hlinkinn</h1>
+
+                    <!-- Label pod menom — absolútne pozicované; mt-* určuje medzeru od textu hlinkinn -->
+                    <img src="../assets/sky-studio-logo.png" alt="Sky Studio"
+                        class="absolute top-full left-1/2 -translate-x-1/2 mt-8 w-64 sm:w-80 opacity-70 select-none" />
+                </div>
 
                 <!-- Slúchadlá ako CTA — preklik na sekciu tracks. Glow pulzuje, pri hoveri sa zastaví. -->
                 <a id="hero-cta" href="#tracks" aria-label="Listen to the tracks"
-                    class="group relative mt-56 sm:mt-32 inline-block">
-                    <div class="hero-glow pointer-events-none absolute" style="width:290px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#a83030 0%,#631f1e 35%,transparent 70%);filter:blur(50px);"></div>
+                    class="group relative mt-[18rem] sm:mt-80 inline-block">
+                    <div class="hero-glow pointer-events-none absolute z-0" style="width:290px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#a83030 0%,#631f1e 35%,transparent 70%);filter:blur(50px);"></div>
                     <img src="../assets/icons/listen_icon.png" alt="Headphones"
-                        class="relative w-8 sm:w-10 select-none transition-transform duration-300 group-hover:scale-[1.04]" />
+                        class="relative z-20 w-8 sm:w-10 select-none transition-transform duration-300 group-hover:scale-[1.04]" />
                 </a>
             </div>
 
@@ -324,7 +329,7 @@ $structuredData = [
                         @media (max-width: 767px) {
                             #waveform-svg {
                                 height: 320px;
-                                transform: translateY(125px) scale(1.5);
+                                transform: translateY(170px) scale(2.0);
                                 transform-origin: center bottom;
                             }
                         }
