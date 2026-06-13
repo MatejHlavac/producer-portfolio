@@ -26,6 +26,19 @@ $tracks = $trackRepo->findAll();
     </div>
 
 
+    <!-- back to public site -->
+    <a href="index.php"
+        class="group fixed left-6 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-12 h-12 rounded-full bg-white/[0.03] border border-white/[0.08] text-white/40 hover:text-emerald-400 hover:border-emerald-500/30 backdrop-blur-[20px] shadow-2xl transition-all duration-300"
+        title="Back to site">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5L12 3l9 6.5" />
+            <path d="M5 10v9a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1v-9" />
+        </svg>
+    </a>
+
+
 
 
 
