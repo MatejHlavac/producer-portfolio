@@ -65,7 +65,7 @@ $tracks = $trackRepo->findAll();
         }
 
         #main-nav.nav-hidden {
-            transform: translateY(calc(-100% - 60px));
+            transform: translateY(calc(-100% - 40px));
             pointer-events: none;
         }
 
@@ -85,6 +85,13 @@ $tracks = $trackRepo->findAll();
             mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
             -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 72%);
             z-index: -1;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Pri skrytí navbaru úplne vyhasne aj blur za hamburgerom, aby nepresakoval */
+        #main-nav.nav-hidden #menu-toggle::before {
+            opacity: 0;
         }
 
         #icon-menu,
@@ -120,11 +127,11 @@ $tracks = $trackRepo->findAll();
         #nav-links {
             position: fixed;
             top: 2.5rem;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 5rem;
+            height: 2.75rem;
             display: flex;
             align-items: center;
-            gap: 1.6rem;
+            gap: 1.3rem;
             z-index: 50;
             isolation: isolate;
             transition: transform 0.5s ease;
@@ -132,7 +139,7 @@ $tracks = $trackRepo->findAll();
         }
 
         #nav-links a {
-            font-size: 21px;
+            font-size: 18px;
             opacity: 0;
             transition: color 0.3s ease, opacity 0.35s ease;
         }
@@ -149,6 +156,7 @@ $tracks = $trackRepo->findAll();
             content: '';
             position: absolute;
             inset: -50px -80px;
+            pointer-events: none;
             opacity: 0;
             transition: opacity 0.28s ease;
             backdrop-filter: blur(20px);
@@ -175,7 +183,19 @@ $tracks = $trackRepo->findAll();
         }
 
         #nav-links.nav-hidden {
-            transform: translateX(-50%) translateY(calc(-100% - 60px));
+            transform: translateY(calc(-100% - 40px));
+        }
+
+        /* Desktop — linky vycentrované v strede obrazovky (mobil ostáva pri ľavom okraji) */
+        @media (min-width: 768px) {
+            #nav-links {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            #nav-links.nav-hidden {
+                transform: translateX(-50%) translateY(calc(-100% - 40px));
+            }
         }
 
         @keyframes glowPulse {
@@ -205,10 +225,10 @@ $tracks = $trackRepo->findAll();
 <body class="bg-[#050505] overflow-x-hidden">
 
     <!-- Navbar -->
-    <nav id="main-nav" class="fixed top-10 z-50" style="left: 6rem;">
+    <nav id="main-nav" class="fixed top-10 z-50" style="left: 1.5rem;">
 
         <!-- Hamburger ikona -->
-        <button id="menu-toggle" class="group p-2 flex items-center justify-center">
+        <button id="menu-toggle" class="group h-11 w-11 flex items-center justify-center">
             <!-- Wrapper — obe ikony naskladané na seba -->
             <div class="relative" style="width:22px;height:14px;">
                 <svg id="icon-menu" width="22" height="10" viewBox="-1 0 18 8" fill="none" style="position:absolute;top:2px;left:-1px;">
@@ -235,21 +255,20 @@ $tracks = $trackRepo->findAll();
         <section id="hero" class="relative" style="height:100vh;overflow:visible;">
 
             <!-- Obsah hero sekcie -->
-            <div class="relative z-10 flex flex-col items-center justify-center px-10" style="height:100%;padding-bottom:80px;">
-                <h1 class="text-[5rem] sm:text-[7rem] lg:text-[9rem] font-thin text-white leading-none tracking-tight mb-8 mt-32">hlinkinn</h1>
-                <p class="text-[11px] font-bold uppercase tracking-[0.25em] text-white/30">Beats &nbsp;•&nbsp; Productions &nbsp;•&nbsp; Collaborations</p>
+            <div class="relative z-10 flex flex-col items-center justify-center px-6 sm:px-10" style="height:100%;padding-bottom:80px;">
+                <h1 class="text-[3.5rem] sm:text-[7rem] lg:text-[9rem] font-thin text-white leading-none tracking-tight mb-8 mt-48 sm:mt-32 translate-y-16 sm:translate-y-0">hlinkinn</h1>
 
                 <!-- Slúchadlá ako CTA — preklik na sekciu tracks. Glow pulzuje, pri hoveri sa zastaví. -->
                 <a id="hero-cta" href="#tracks" aria-label="Listen to the tracks"
-                    class="group relative mt-32 inline-block">
+                    class="group relative mt-56 sm:mt-32 inline-block">
                     <div class="hero-glow pointer-events-none absolute" style="width:290px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#a83030 0%,#631f1e 35%,transparent 70%);filter:blur(50px);"></div>
                     <img src="../assets/icons/listen_icon.png" alt="Headphones"
-                        class="relative w-10 select-none transition-transform duration-300 group-hover:scale-[1.04]" />
+                        class="relative w-8 sm:w-10 select-none transition-transform duration-300 group-hover:scale-[1.04]" />
                 </a>
             </div>
 
             <!-- Vlnová animácia — na spodku hero sekcie -->
-            <div class="absolute bottom-0 left-0 w-full z-10 pointer-events-none">
+            <div class="absolute bottom-0 left-0 w-full z-10 pointer-events-none overflow-x-clip">
                 <svg id="waveform-svg" viewBox="0 -115 1280 130" preserveAspectRatio="xMinYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
 
                     <style>
@@ -259,7 +278,9 @@ $tracks = $trackRepo->findAll();
 
                         @media (max-width: 767px) {
                             #waveform-svg {
-                                height: 240px;
+                                height: 320px;
+                                transform: translateY(125px) scale(1.5);
+                                transform-origin: center bottom;
                             }
                         }
                     </style>
@@ -349,27 +370,34 @@ $tracks = $trackRepo->findAll();
 
 
 
-        <section id="tracks" class="max-w-6xl mx-auto px-10 mt-64">
+        <section id="tracks" class="max-w-6xl mx-auto px-6 sm:px-10 mt-32 lg:mt-64">
 
-            <p class="text-[2.75rem] font-thin text-white mb-10">tracks</p>
+            <p class="text-[2.75rem] font-thin text-white mb-14 sm:mb-10">tracks</p>
 
             <!-- BPM filter — client-side, no reload (filters the already-rendered rows) -->
-            <div class="mb-20 flex flex-wrap items-center justify-center gap-3.5">
-                <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">BPM</span>
-                <input id="bpm-min" type="number" min="0" inputmode="numeric" placeholder="from"
-                    class="no-spinner w-24 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 font-mono text-[14px] text-white/80 placeholder-white/15 outline-none transition-colors duration-300 focus:border-white/25" />
-                <span class="text-white/25">–</span>
-                <input id="bpm-max" type="number" min="0" inputmode="numeric" placeholder="to"
-                    class="no-spinner w-24 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 font-mono text-[14px] text-white/80 placeholder-white/15 outline-none transition-colors duration-300 focus:border-white/25" />
+            <!-- Glassmorphism karta — rovnaký efekt ako contact formulár (len BPM + inputy) -->
+            <div class="sm:w-fit sm:mx-auto rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-6 sm:px-10 py-4">
+                <div class="flex flex-nowrap items-center justify-center gap-2.5">
+                    <span class="text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">BPM</span>
+                    <input id="bpm-min" type="number" min="0" inputmode="numeric" placeholder="from"
+                        class="no-spinner w-20 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 font-mono text-[14px] text-white/80 placeholder-white/15 outline-none transition-colors duration-300 focus:border-white/25" />
+                    <span class="text-white/25">–</span>
+                    <input id="bpm-max" type="number" min="0" inputmode="numeric" placeholder="to"
+                        class="no-spinner w-20 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 font-mono text-[14px] text-white/80 placeholder-white/15 outline-none transition-colors duration-300 focus:border-white/25" />
+                </div>
+            </div>
+
+            <!-- Reset — mimo glassmorphism boxu, vycentrovaný pod ním -->
+            <div class="mb-10 sm:mb-20 mt-4 flex justify-center">
                 <button id="bpm-reset" type="button"
-                    class="ml-1 rounded-xl border border-white/[0.06] px-3.5 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/35 transition-colors duration-300 hover:border-white/25 hover:text-white/70">
+                    class="rounded-xl border border-white/[0.06] px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/35 transition-colors duration-300 hover:border-white/25 hover:text-white/70">
                     Reset
                 </button>
             </div>
 
             <div class="flex flex-col gap-3">
                 <?php foreach ($tracks as $track): ?>
-                    <div class="track-row group flex items-center gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-6 py-5 transition-all duration-300 hover:bg-white/[0.05]" data-bpm="<?= (int)$track->bpm ?>">
+                    <div class="track-row group flex items-center gap-4 sm:gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 sm:px-6 sm:py-5 transition-all duration-300 hover:bg-white/[0.05]" data-bpm="<?= (int)$track->bpm ?>">
 
                         <!-- Play ikona — príprava na budúci prehrávač -->
                         <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
@@ -388,18 +416,22 @@ $tracks = $trackRepo->findAll();
                             </p>
                         </div>
 
-                        <!-- BPM -->
-                        <span class="shrink-0 font-mono text-[13px] text-white/45 transition-colors duration-300 group-hover:text-white/70">
-                            <?= htmlspecialchars($track->bpm) ?> BPM
-                        </span>
+                        <!-- BPM + dĺžka — na mobile pod sebou (BPM hore), na desktope vedľa seba -->
+                        <div class="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center sm:gap-5">
 
-                        <!-- Dĺžka — doplní JavaScript z audio metadát -->
-                        <div class="flex w-14 shrink-0 items-center justify-end gap-1.5 text-white/40">
-                            <svg class="h-3.5 w-3.5 text-white/20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
-                            <span class="track-duration font-mono text-[12px] tabular-nums" data-src="../<?= htmlspecialchars($track->file_path) ?>">--:--</span>
+                            <!-- BPM -->
+                            <span class="font-mono text-[13px] text-white/45 transition-colors duration-300 group-hover:text-white/70">
+                                <?= htmlspecialchars($track->bpm) ?> BPM
+                            </span>
+
+                            <!-- Dĺžka — doplní JavaScript z audio metadát -->
+                            <div class="flex w-14 items-center justify-end gap-1.5 text-white/40">
+                                <svg class="h-3.5 w-3.5 text-white/20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                <span class="track-duration font-mono text-[12px] tabular-nums" data-src="../<?= htmlspecialchars($track->file_path) ?>">--:--</span>
+                            </div>
                         </div>
 
                     </div>
@@ -471,7 +503,7 @@ $tracks = $trackRepo->findAll();
 
 
 
-        <section id="about" class="max-w-6xl mx-auto px-10 mt-72 mb-16">
+        <section id="about" class="max-w-6xl mx-auto px-6 sm:px-10 mt-32 lg:mt-72 mb-16">
 
             <p class="text-[2.75rem] font-thin text-white mb-20">about</p>
 
@@ -522,7 +554,7 @@ $tracks = $trackRepo->findAll();
             </div>
 
             <!-- Socials — horizontálne pod label časťou -->
-            <div class="flex items-center justify-center gap-24 mt-28">
+            <div class="flex items-center justify-center gap-10 sm:gap-16 lg:gap-24 mt-16 lg:mt-28">
                 <a href="https://instagram.com/hlinkinn" target="_blank" aria-label="Instagram" class="group relative h-14 w-14">
                     <img src="../assets/icons/ig_icon_base.png" alt="Instagram" class="absolute inset-0 h-full w-full object-contain opacity-60 group-hover:opacity-0 transition-opacity duration-300">
                     <img src="../assets/icons/ig_icon_hover.png" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -545,7 +577,7 @@ $tracks = $trackRepo->findAll();
 
 
 
-        <div class="relative mt-80 z-20">
+        <div class="relative mt-40 lg:mt-80 z-20 overflow-x-clip">
 
             <!-- Farebné boby na pozadí -->
             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: visible;">
@@ -554,15 +586,15 @@ $tracks = $trackRepo->findAll();
                 <div style="position: absolute; top: 30%; right: 12%; width: 360px; height: 360px; border-radius: 50%; background-color: #1d4a55; opacity: 0.4; filter: blur(85px);"></div>
             </div>
 
-            <section id="contact" class="max-w-2xl mx-auto py-16 relative z-10">
-                <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-10 pt-7 pb-10">
+            <section id="contact" class="max-w-2xl mx-auto px-4 sm:px-6 py-16 relative z-10">
+                <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-6 sm:px-10 pt-7 pb-10">
 
                     <p class="text-[2.75rem] font-thin text-white mb-8">contact</p>
 
                     <form id="contact-form" novalidate>
 
                         <!-- Name + Email -->
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div class="group">
                                 <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Name</label>
                                 <input type="text" name="name" placeholder="Your name" required
@@ -596,7 +628,7 @@ $tracks = $trackRepo->findAll();
                         <!-- Track selector — visible only for License -->
                         <div id="track-selector" class="hidden mb-4">
                             <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-3">Choose tracks</label>
-                            <div class="grid grid-cols-2 gap-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <?php foreach ($tracks as $track): ?>
                                     <label class="flex items-center gap-3 cursor-pointer rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 hover:bg-white/[0.06] transition-colors has-[:checked]:border-white/20 has-[:checked]:bg-white/[0.08]">
                                         <input type="checkbox" name="tracks[]" value="<?= htmlspecialchars($track->title) ?>" class="sr-only">
@@ -631,7 +663,7 @@ $tracks = $trackRepo->findAll();
     </main>
 
     <!-- Footer wrapper — obrázok pozadia presahuje za rohy footer elementu -->
-    <div class="relative w-full mt-[30px] pt-[23rem] pb-32 overflow-hidden">
+    <div class="relative w-full mt-[30px] pt-56 sm:pt-[23rem] pb-32 overflow-hidden">
 
         <!-- Pozadie — celá šírka wrapperu -->
         <img src="../assets/footer-background.png" alt="" class="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[120%] object-cover z-0">
@@ -643,9 +675,9 @@ $tracks = $trackRepo->findAll();
         <div class="absolute top-0 left-0 w-full h-48 z-[6]" style="background: linear-gradient(to bottom, #050505 0%, transparent 100%);"></div>
 
         <!-- Footer element — matné sklo nad obrázkom -->
-        <footer class="relative z-10 mx-32">
+        <footer class="relative z-10 mx-4 sm:mx-8 lg:mx-32">
 
-            <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-10 pt-7 pb-6">
+            <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-6 sm:px-10 pt-7 pb-6">
 
                 <!-- Navigačné odkazy -->
                 <nav class="flex flex-col items-start mb-20 mt-10 leading-tight">
@@ -658,21 +690,19 @@ $tracks = $trackRepo->findAll();
                 </nav>
 
                 <!-- Spodná lišta -->
-                <div class="mt-7 pt-4 flex justify-between items-center">
+                <div class="mt-7 pt-4 flex flex-col gap-5 sm:flex-row sm:justify-between sm:items-center">
 
-                    <!-- Vľavo: Instagram • Email -->
-                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">
+                    <!-- Vľavo: socials -->
+                    <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">
                         <a href="https://instagram.com/hlinkinn" target="_blank" class="hover:text-white transition-colors duration-300">Instagram</a>
-                        <span class="text-white/15">•</span>
                         <a href="mailto:matohlavac1@gmail.com" class="hover:text-white text-transition-colors duration-300">Email</a>
-                        <span class="text-white/15">•</span>
                         <a href="https://www.youtube.com/@hlinkin808" target="_blank" class="hover:text-white transition-colors duration-300">Youtube</a>
-                        <span class="text-white/15">•</span>
+                        <a href="https://open.spotify.com/" target="_blank" class="hover:text-white transition-colors duration-300">Spotify</a>
                         <a href="https://www.beatstars.com/hlinkingpin" target="_blank" class="hover:text-white transition-colors duration-300">Beatstars</a>
                     </div>
 
-                    <!-- Vpravo: skrytý admin -->
-                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.25em] text-white/25">
+                    <!-- Vpravo: skrytý admin — len na desktope (computer), na mobile/tablete schovaný -->
+                    <div class="hidden lg:flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.25em] text-white/25">
                         <a href="login.php" class="opacity-60 hover:opacity-100 transition-opacity duration-300">Admin</a>
                     </div>
 
@@ -683,7 +713,7 @@ $tracks = $trackRepo->findAll();
         </footer>
 
         <!-- Spodný text nad obrázkom -->
-        <p class="ocr-a absolute bottom-8 left-0 right-0 z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">Made by: Matej Hlaváč &nbsp;•&nbsp; © 2026. All rights reserved.</p>
+        <p class="ocr-a absolute bottom-8 left-0 right-0 z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">© 2026. All rights reserved.<br>Made by: Matej Hlaváč</p>
 
     </div>
 
