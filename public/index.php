@@ -189,6 +189,16 @@ $tracks = $trackRepo->findAll();
                 opacity: 0.65;
             }
         }
+
+        /* Glow pulzuje; animácia musí byť v CSS (nie inline), aby ju hover pauza vedela prebiť */
+        .hero-glow {
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        /* Pri hoveri na CTA slúchadlá sa pulzovanie glow zastaví */
+        #hero-cta:hover .hero-glow {
+            animation-play-state: paused;
+        }
     </style>
 </head>
 
@@ -229,19 +239,13 @@ $tracks = $trackRepo->findAll();
                 <h1 class="text-[5rem] sm:text-[7rem] lg:text-[9rem] font-thin text-white leading-none tracking-tight mb-8 mt-32">hlinkinn</h1>
                 <p class="text-[11px] font-bold uppercase tracking-[0.25em] text-white/30">Beats &nbsp;•&nbsp; Productions &nbsp;•&nbsp; Collaborations</p>
 
-                <!-- Audio waveform ikona s pulzujúcou glow -->
-                <div class="relative mt-32">
-                    <div class="absolute" style="width:360px;height:250px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#a83030 0%,#631f1e 35%,transparent 70%);filter:blur(50px);animation:glowPulse 3s ease-in-out infinite;"></div>
-                    <svg class="relative text-white/80" width="126" height="91" viewBox="0 0 126 91" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <line x1="5" y1="42.3333" x2="5" y2="48.6666" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                        <line x1="23.9854" y1="32.2222" x2="23.9854" y2="58.7778" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                        <line x1="42.9712" y1="38.4443" x2="42.9712" y2="52.5554" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                        <line x1="61.957" y1="20.5557" x2="61.957" y2="70.4446" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                        <line x1="80.9424" y1="27.5557" x2="80.9424" y2="63.4446" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                        <line x1="99.9282" y1="36.1111" x2="99.9282" y2="54.8889" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                        <line x1="118.914" y1="42.3333" x2="118.914" y2="48.6666" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                    </svg>
-                </div>
+                <!-- Slúchadlá ako CTA — preklik na sekciu tracks. Glow pulzuje, pri hoveri sa zastaví. -->
+                <a id="hero-cta" href="#tracks" aria-label="Listen to the tracks"
+                    class="group relative mt-32 inline-block">
+                    <div class="hero-glow pointer-events-none absolute" style="width:290px;height:200px;top:50%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,#a83030 0%,#631f1e 35%,transparent 70%);filter:blur(50px);"></div>
+                    <img src="../assets/icons/listen_icon.png" alt="Headphones"
+                        class="relative w-10 select-none transition-transform duration-300 group-hover:scale-[1.04]" />
+                </a>
             </div>
 
             <!-- Vlnová animácia — na spodku hero sekcie -->
