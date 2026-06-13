@@ -14,15 +14,60 @@ $trackRepo = new TrackRepository($db);
 
 $tracks = $trackRepo->findAll();
 
+// Plná produkčná URL stránky — používa sa v canonical a Open Graph značkách.
+// Pri nasadení na reálnu doménu sem zadaj skutočnú adresu (bez lomky na konci).
+$siteUrl = 'https://hlinkinn.com';
+
+// Štruktúrované dáta o interpretovi (JSON-LD). Vyhľadávače ich čítajú, aby
+// pochopili, že stránka patrí hudobnému producentovi a kde ho nájdu na sieťach.
+// Pole necháme zostaviť cez json_encode, aby bol výstup vždy platné JSON.
+$structuredData = [
+    '@context' => 'https://schema.org',
+    '@type'    => 'MusicGroup',
+    'name'     => 'hlinkinn',
+    'url'      => $siteUrl,
+    'sameAs'   => [
+        'https://instagram.com/hlinkinn',
+        'https://www.youtube.com/@hlinkin808',
+        'https://www.beatstars.com/hlinkingpin',
+    ],
+];
+
 ?>
 
 <!DOCTYPE html>
-<html lang="sk" class="scroll-smooth">
+<html lang="en" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Producer Portfolio</title>
+
+    <!-- Základné SEO značky -->
+    <title>hlinkinn — Music Producer &amp; Beatmaker</title>
+    <meta name="description" content="Music producer and beatmaker hlinkinn. Listen to original tracks and beats, filter them by BPM, and get in touch for licensing or collaboration.">
+    <link rel="canonical" href="<?= htmlspecialchars($siteUrl) ?>/">
+    <link rel="icon" type="image/png" href="../assets/icons/listen_icon.png">
+
+    <!-- Open Graph — náhľad pri zdieľaní na Facebooku, Instagrame, Discorde… -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="hlinkinn — Music Producer &amp; Beatmaker">
+    <meta property="og:description" content="Listen to original tracks and beats by hlinkinn. Filter by BPM and reach out for licensing or collaboration.">
+    <meta property="og:url" content="<?= htmlspecialchars($siteUrl) ?>/">
+    <!-- Náhľadový obrázok musí byť absolútna, verejne dostupná URL (ideálne 1200×630). -->
+    <meta property="og:image" content="<?= htmlspecialchars($siteUrl) ?>/assets/og-image.png">
+
+    <!-- Twitter / X karta -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="hlinkinn — Music Producer &amp; Beatmaker">
+    <meta name="twitter:description" content="Listen to original tracks and beats by hlinkinn. Filter by BPM and reach out for licensing or collaboration.">
+    <meta name="twitter:image" content="<?= htmlspecialchars($siteUrl) ?>/assets/og-image.png">
+
+    <!-- Štruktúrované dáta (JSON-LD) — zostavené z $structuredData (pozri vrch súboru) -->
+    <script type="application/ld+json">
+<?= json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?>
+</script>
+
+    <link rel="preconnect" href="https://api.fontshare.com">
     <link rel="stylesheet" href="css/output.css">
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=slussen@300,400,500,700&display=swap">
     <style>
@@ -372,7 +417,7 @@ $tracks = $trackRepo->findAll();
 
         <section id="tracks" class="max-w-6xl mx-auto px-6 sm:px-10 mt-32 lg:mt-64">
 
-            <p class="text-[2.75rem] font-thin text-white mb-14 sm:mb-10">tracks</p>
+            <h2 class="text-[2.75rem] font-thin text-white mb-14 sm:mb-10">tracks</h2>
 
             <!-- BPM filter — client-side, no reload (filters the already-rendered rows) -->
             <!-- Glassmorphism karta — rovnaký efekt ako contact formulár (len BPM + inputy) -->
@@ -505,7 +550,7 @@ $tracks = $trackRepo->findAll();
 
         <section id="about" class="max-w-6xl mx-auto px-6 sm:px-10 mt-32 lg:mt-72 mb-16">
 
-            <p class="text-[2.75rem] font-thin text-white mb-20">about</p>
+            <h2 class="text-[2.75rem] font-thin text-white mb-20">about</h2>
 
             <!-- Riadok 1 — producer: fotka vľavo, text vpravo -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
@@ -589,27 +634,27 @@ $tracks = $trackRepo->findAll();
             <section id="contact" class="max-w-2xl mx-auto px-4 sm:px-6 py-16 relative z-10">
                 <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-6 sm:px-10 pt-7 pb-10">
 
-                    <p class="text-[2.75rem] font-thin text-white mb-8">contact</p>
+                    <h2 class="text-[2.75rem] font-thin text-white mb-8">contact</h2>
 
                     <form id="contact-form" novalidate>
 
                         <!-- Name + Email -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                             <div class="group">
-                                <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Name</label>
-                                <input type="text" name="name" placeholder="Your name" required
+                                <label for="contact-name" class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Name</label>
+                                <input type="text" name="name" id="contact-name" placeholder="Your name" required
                                     class="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-[15px] font-thin text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors">
                             </div>
                             <div class="group">
-                                <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Email</label>
-                                <input type="email" name="email" placeholder="your@email.com" required
+                                <label for="contact-email" class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Email</label>
+                                <input type="email" name="email" id="contact-email" placeholder="your@email.com" required
                                     class="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-[15px] font-thin text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors">
                             </div>
                         </div>
 
                         <!-- Subject -->
                         <div class="mb-4 group">
-                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Subject</label>
+                            <label for="contact-subject" class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Subject</label>
                             <div class="relative">
                                 <select name="subject" id="contact-subject" required
                                     class="w-full appearance-none rounded-xl border border-white/[0.06] bg-white/[0.03] pl-12 pr-5 py-4 text-[15px] font-thin text-white/80 focus:outline-none focus:border-white/20 transition-colors cursor-pointer">
@@ -641,8 +686,8 @@ $tracks = $trackRepo->findAll();
 
                         <!-- Message -->
                         <div class="mb-6 group">
-                            <label class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Message</label>
-                            <textarea name="message" rows="5" placeholder="Your message..." required
+                            <label for="contact-message" class="block text-[10px] font-bold uppercase tracking-[0.25em] text-white/35 mb-2 transition-colors duration-200 group-focus-within:text-white/70">Message</label>
+                            <textarea name="message" id="contact-message" rows="5" placeholder="Your message..." required
                                 class="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4 text-[15px] font-thin text-white/80 placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors resize-none"></textarea>
                         </div>
 

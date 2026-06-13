@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin a interné API nepatria do indexu vyhľadávačov
+Disallow: /admin.php
+Disallow: /login.php
+Disallow: /api/
+
+Sitemap: https://hlinkinn.com/sitemap.xml
