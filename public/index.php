@@ -38,6 +38,8 @@ $structuredData = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+
     <!-- Základné SEO značky -->
     <title>hlinkinn — Music Producer &amp; Beatmaker</title>
     <meta name="description" content="Music producer and beatmaker hlinkinn. Listen to original tracks and beats, filter them by BPM, and get in touch for licensing or collaboration.">
