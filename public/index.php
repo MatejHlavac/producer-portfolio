@@ -38,6 +38,8 @@ $structuredData = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+
     <!-- Základné SEO značky -->
     <title>hlinkinn — Music Producer &amp; Beatmaker</title>
     <meta name="description" content="Music producer and beatmaker hlinkinn. Listen to original tracks and beats, filter them by BPM, and get in touch for licensing or collaboration.">
@@ -447,10 +449,14 @@ $structuredData = [
 
             <div class="flex flex-col gap-3">
                 <?php foreach ($tracks as $track): ?>
-                    <div class="track-row group flex items-center gap-4 sm:gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 sm:px-6 sm:py-5 transition-all duration-300 hover:bg-white/[0.05]" data-bpm="<?= (int)$track->bpm ?>">
+                    <div class="track-row group flex items-center gap-4 sm:gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-4 sm:px-6 sm:py-5 transition-all duration-300 hover:bg-white/[0.05]"
+                        data-bpm="<?= (int)$track->bpm ?>"
+                        data-src="../<?= htmlspecialchars($track->file_path) ?>"
+                        data-title="<?= htmlspecialchars($track->title) ?>"
+                        data-genre="<?= htmlspecialchars($track->genre) ?>">
 
                         <!-- Play ikona — príprava na budúci prehrávač -->
-                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
+                        <div class=" flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
                             <svg width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-70 transition-opacity duration-300 group-hover:opacity-100">
                                 <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
                             </svg>
@@ -763,8 +769,64 @@ $structuredData = [
         </footer>
 
         <!-- Spodný text nad obrázkom -->
-        <p class="ocr-a absolute bottom-8 left-0 right-0 z-10 text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">© 2026. All rights reserved.<br>Made by: Matej Hlaváč</p>
+        <p class="ocr-a absolute bottom-28 left-0 right-0 z-10 flex justify-center items-center gap-x-16 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+            <span>© 2026. All rights reserved.</span>
+            <span>Made by: Matej Hlaváč</span>
+        </p>
 
+    </div>
+
+
+
+
+
+    <!-- Sticky audio player — plávajúci zaoblený box, vycentrovaný, vždy navrchu -->
+    <div id="player-bar"
+        class="fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-[200%] z-[9999] w-[92%] sm:w-1/2
+           rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] shadow-2xl
+           transition-transform duration-500">
+        <div class="px-4 sm:px-6 py-4 flex items-center gap-4 sm:gap-6">
+
+            <!-- Play / pause — JS prepína .hidden medzi oboma ikonami -->
+            <button id="player-toggle" aria-label="Play/Pause"
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] hover:bg-white/[0.16] transition-colors">
+
+                <!-- Play ikona -->
+                <svg id="player-icon-play" width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-80">
+                    <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
+                </svg>
+
+                <!-- Pause ikona — skrytá kým track nehrá -->
+                <svg id="player-icon-pause" width="12" height="14" viewBox="0 0 12 14" class="hidden opacity-80">
+                    <rect x="1.5" y="1" width="3" height="12" rx="1" fill="white" />
+                    <rect x="7.5" y="1" width="3" height="12" rx="1" fill="white" />
+                </svg>
+            </button>
+
+            <!-- Názov tracku -->
+            <div class="min-w-0 w-24 sm:w-32 shrink-0">
+                <p id="player-title" class="truncate text-[15px] font-medium text-white/90">—</p>
+            </div>
+
+            <!-- Aktuálny čas — vľavo od slideru -->
+            <span id="player-current" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
+
+            <!-- Seek slider -->
+            <input id="player-seek" type="range" min="0" max="100" value="0"
+                class="flex-1 cursor-pointer accent-white/80">
+
+            <!-- Celková dĺžka — vpravo od slideru -->
+            <span id="player-duration" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
+
+            <!-- Zavrieť -->
+            <button id="player-close" aria-label="Close player"
+                class="shrink-0 text-white/35 hover:text-white/80 transition-colors">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+        </div>
     </div>
 
 
@@ -883,6 +945,175 @@ $structuredData = [
             }
             lastScrollY = currentScrollY;
         });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- sticky audio player using Howler.js -->
+    <script>
+        (function() {
+
+            // state
+            let currentHowl = null;
+            let currentRow = null;
+
+            const bar = document.getElementById('player-bar');
+            const toggleBtn = document.getElementById('player-toggle');
+            const iconPlay = document.getElementById('player-icon-play');
+            const iconPause = document.getElementById('player-icon-pause');
+            const titleEl = document.getElementById('player-title');
+
+            const seek = document.getElementById('player-seek');
+            const currentEl = document.getElementById('player-current');
+            const durationEl = document.getElementById('player-duration');
+            const closeBtn = document.getElementById('player-close');
+
+
+
+
+
+
+            // auxiliary function - seconds to -> "m:ss"
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = String(Math.floor(seconds % 60)).padStart(2, '0');
+                return `${m}:${s}`;
+            }
+
+
+
+
+
+
+
+            let isSeeking = false;
+
+            function progressLoop() {
+                if (currentHowl && currentHowl.playing() && !isSeeking) {
+                    const pos = currentHowl.seek();
+                    const dur = currentHowl.duration();
+                    currentEl.textContent = formatTime(pos);
+                    seek.value = (pos / dur) * 100;
+                }
+                requestAnimationFrame(progressLoop);
+            }
+
+            seek.addEventListener('input', () => {
+                isSeeking = true;
+                if (!currentHowl) return;
+                const dur = currentHowl.duration();
+                currentEl.textContent = formatTime((seek.value / 100) * dur);
+            })
+
+
+            seek.addEventListener('change', () => {
+                if (currentHowl) {
+                    const dur = currentHowl.duration();
+                    currentHowl.seek((seek.value / 100) * dur);
+                }
+                isSeeking = false;
+            })
+
+
+
+
+
+
+
+            closeBtn.addEventListener('click', () => {
+                if (currentHowl) {
+                    currentHowl.stop();
+                    currentHowl.unload();
+                }
+                currentHowl = null;
+                currentRow = null;
+                showPlayingUI(false);
+                seek.value = 0;
+                currentEl.textContent = '0:00';
+                bar.classList.add('translate-y-[200%]'); // skry bar
+            });
+
+
+
+            // function to display pause or play icon
+            function showPlayingUI(isPlaying) {
+                iconPlay.classList.toggle('hidden', isPlaying);
+                iconPause.classList.toggle('hidden', !isPlaying);
+            }
+
+
+
+
+
+
+            function playTrack(row) {
+                if ((row === currentRow) && (currentHowl)) {
+                    togglePlayPause();
+                    return;
+                }
+
+                if (currentHowl) {
+                    currentHowl.unload();
+                }
+
+                currentRow = row;
+
+                currentHowl = new Howl({
+                    src: [row.dataset.src],
+                    html5: true,
+                    onplay: () => showPlayingUI(true),
+                    onpause: () => showPlayingUI(false),
+                    onload: () => durationEl.textContent = formatTime(currentHowl.duration()),
+                    onend: () => {
+                        showPlayingUI(false);
+                        seek.value = 0;
+                        currentEl.textContent = '0:00';
+                    }
+                });
+
+                currentHowl.play();
+
+                titleEl.textContent = row.dataset.title;
+                bar.classList.remove('translate-y-[200%]');
+            }
+
+
+
+
+            function togglePlayPause() {
+                if (!currentHowl) return;
+                if (currentHowl.playing()) {
+                    currentHowl.pause();
+                } else {
+                    currentHowl.play();
+                }
+            }
+
+
+
+
+
+
+            document.querySelectorAll('.track-row').forEach(row => {
+                row.addEventListener('click', () => playTrack(row));
+            });
+
+            toggleBtn.addEventListener('click', togglePlayPause);
+
+            requestAnimationFrame(progressLoop);
+
+        })();
     </script>
 
 
