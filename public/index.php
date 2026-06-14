@@ -949,6 +949,17 @@ $structuredData = [
 
 
 
+
+
+
+
+
+
+
+
+
+
+
     <!-- sticky audio player using Howler.js -->
     <script>
         (function() {
@@ -963,6 +974,15 @@ $structuredData = [
             const iconPause = document.getElementById('player-icon-pause');
             const titleEl = document.getElementById('player-title');
 
+            const seek = document.getElementById('player-seek');
+            const currentEl = document.getElementById('player-current');
+            const durationEl = document.getElementById('player-duration');
+            const closeBtn = document.getElementById('player-close');
+
+
+
+
+
 
             // auxiliary function - seconds to -> "m:ss"
             function formatTime(seconds) {
@@ -971,10 +991,71 @@ $structuredData = [
                 return `${m}:${s}`;
             }
 
+
+
+
+
+
+
+            let isSeeking = false;
+
+            function progressLoop() {
+                if (currentHowl && currentHowl.playing() && !isSeeking) {
+                    const pos = currentHowl.seek();
+                    const dur = currentHowl.duration();
+                    currentEl.textContent = formatTime(pos);
+                    seek.value = (pos / dur) * 100;
+                }
+                requestAnimationFrame(progressLoop);
+            }
+
+            seek.addEventListener('input', () => {
+                isSeeking = true;
+                if (!currentHowl) return;
+                const dur = currentHowl.duration();
+                currentEl.textContent = formatTime((seek.value / 100) * dur);
+            })
+
+
+            seek.addEventListener('change', () => {
+                if (currentHowl) {
+                    const dur = currentHowl.duration();
+                    currentHowl.seek((seek.value / 100) * dur);
+                }
+                isSeeking = false;
+            })
+
+
+
+
+
+
+
+            closeBtn.addEventListener('click', () => {
+                if (currentHowl) {
+                    currentHowl.stop();
+                    currentHowl.unload();
+                }
+                currentHowl = null;
+                currentRow = null;
+                showPlayingUI(false);
+                seek.value = 0;
+                currentEl.textContent = '0:00';
+                bar.classList.add('translate-y-[200%]'); // skry bar
+            });
+
+
+
+            // function to display pause or play icon
             function showPlayingUI(isPlaying) {
                 iconPlay.classList.toggle('hidden', isPlaying);
                 iconPause.classList.toggle('hidden', !isPlaying);
             }
+
+
+
+
+
 
             function playTrack(row) {
                 if ((row === currentRow) && (currentHowl)) {
@@ -992,7 +1073,13 @@ $structuredData = [
                     src: [row.dataset.src],
                     html5: true,
                     onplay: () => showPlayingUI(true),
-                    onpause: () => showPlayingUI(false)
+                    onpause: () => showPlayingUI(false),
+                    onload: () => durationEl.textContent = formatTime(currentHowl.duration()),
+                    onend: () => {
+                        showPlayingUI(false);
+                        seek.value = 0;
+                        currentEl.textContent = '0:00';
+                    }
                 });
 
                 currentHowl.play();
@@ -1000,6 +1087,8 @@ $structuredData = [
                 titleEl.textContent = row.dataset.title;
                 bar.classList.remove('translate-y-[200%]');
             }
+
+
 
 
             function togglePlayPause() {
@@ -1012,13 +1101,18 @@ $structuredData = [
             }
 
 
+
+
+
+
             document.querySelectorAll('.track-row').forEach(row => {
                 row.addEventListener('click', () => playTrack(row));
             });
 
-
-
             toggleBtn.addEventListener('click', togglePlayPause);
+
+            requestAnimationFrame(progressLoop);
+
         })();
     </script>
 
