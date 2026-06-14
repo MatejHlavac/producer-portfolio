@@ -782,7 +782,7 @@ $structuredData = [
 
     <!-- Sticky audio player — plávajúci zaoblený box, vycentrovaný, vždy navrchu -->
     <div id="player-bar"
-        class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999] w-[92%] sm:w-1/2
+        class="fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-[200%] z-[9999] w-[92%] sm:w-1/2
            rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] shadow-2xl
            transition-transform duration-500">
         <div class="px-4 sm:px-6 py-4 flex items-center gap-4 sm:gap-6">
@@ -945,6 +945,81 @@ $structuredData = [
             }
             lastScrollY = currentScrollY;
         });
+    </script>
+
+
+
+    <!-- sticky audio player using Howler.js -->
+    <script>
+        (function() {
+
+            // state
+            let currentHowl = null;
+            let currentRow = null;
+
+            const bar = document.getElementById('player-bar');
+            const toggleBtn = document.getElementById('player-toggle');
+            const iconPlay = document.getElementById('player-icon-play');
+            const iconPause = document.getElementById('player-icon-pause');
+            const titleEl = document.getElementById('player-title');
+
+
+            // auxiliary function - seconds to -> "m:ss"
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = String(Math.floor(seconds % 60)).padStart(2, '0');
+                return `${m}:${s}`;
+            }
+
+            function showPlayingUI(isPlaying) {
+                iconPlay.classList.toggle('hidden', isPlaying);
+                iconPause.classList.toggle('hidden', !isPlaying);
+            }
+
+            function playTrack(row) {
+                if ((row === currentRow) && (currentHowl)) {
+                    togglePlayPause();
+                    return;
+                }
+
+                if (currentHowl) {
+                    currentHowl.unload();
+                }
+
+                currentRow = row;
+
+                currentHowl = new Howl({
+                    src: [row.dataset.src],
+                    html5: true,
+                    onplay: () => showPlayingUI(true),
+                    onpause: () => showPlayingUI(false)
+                });
+
+                currentHowl.play();
+
+                titleEl.textContent = row.dataset.title;
+                bar.classList.remove('translate-y-[200%]');
+            }
+
+
+            function togglePlayPause() {
+                if (!currentHowl) return;
+                if (currentHowl.playing()) {
+                    currentHowl.pause();
+                } else {
+                    currentHowl.play();
+                }
+            }
+
+
+            document.querySelectorAll('.track-row').forEach(row => {
+                row.addEventListener('click', () => playTrack(row));
+            });
+
+
+
+            toggleBtn.addEventListener('click', togglePlayPause);
+        })();
     </script>
 
 
