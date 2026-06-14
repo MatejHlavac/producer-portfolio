@@ -267,6 +267,80 @@ $structuredData = [
             border-color: rgba(255, 255, 255, 0.25);
             background: rgba(255, 255, 255, 0.08);
         }
+
+        /* Equalizer — defaultne skrytý, play ikona viditeľná */
+        .eq {
+            display: none;
+            align-items: flex-end;
+            gap: 2px;
+            height: 14px;
+        }
+
+        /* Keď riadok hrá: skry play ikonu, zobraz stĺpčeky */
+        .track-row.is-playing .play-icon {
+            display: none;
+        }
+
+        .track-row.is-playing .eq {
+            display: flex;
+        }
+
+        .eq span {
+            width: 2px;
+            height: 100%;
+            background: #1DB954;
+            transform-origin: bottom;
+            animation: eq-bounce 1.5s ease-in-out infinite;
+        }
+
+        /* Posunuté začiatky, aby stĺpčeky neskákali naraz */
+        .eq span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .eq span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .eq span:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes eq-bounce {
+
+            0%,
+            100% {
+                transform: scaleY(0.3);
+            }
+
+            50% {
+                transform: scaleY(1);
+            }
+        }
+
+        .track-row.is-playing.is-paused .eq span {
+            animation-play-state: paused;
+        }
+
+        /* Riadok je klikateľný (cez JS), ale div nemá natívny pointer kurzor */
+        .track-row {
+            cursor: pointer;
+        }
+
+        /* Hrajúci riadok — krúžok sa zafarbí na Spotify zelenú */
+        .track-circle {
+            transition: opacity 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .track-row.is-playing .track-circle {
+            border-color: #1DB954;
+            background: rgba(29, 185, 84, 0.15);
+        }
+
+        /* Pauza — krúžok aj stĺpčeky stlmené (len kým je riadok aktívny) */
+        .track-row.is-playing.is-paused .track-circle {
+            opacity: 0.4;
+        }
     </style>
 </head>
 
@@ -460,11 +534,15 @@ $structuredData = [
                         data-title="<?= htmlspecialchars($track->title) ?>"
                         data-genre="<?= htmlspecialchars($track->genre) ?>">
 
-                        <!-- Play ikona — príprava na budúci prehrávač -->
-                        <div class=" flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
-                            <svg width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-70 transition-opacity duration-300 group-hover:opacity-100">
+                        <!-- Play ikona / equalizer — equalizer sa zobrazí keď riadok hrá -->
+                        <div class="track-circle flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] transition-colors duration-300 group-hover:border-white/25 group-hover:bg-white/[0.16]">
+                            <svg class="play-icon opacity-70 transition-opacity duration-300 group-hover:opacity-100" width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);">
                                 <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
                             </svg>
+                            <!-- Animované stĺpčeky (Spotify-style) -->
+                            <div class="eq">
+                                <span></span><span></span><span></span><span></span>
+                            </div>
                         </div>
 
                         <!-- Názov + žáner -->
@@ -787,49 +865,65 @@ $structuredData = [
 
     <!-- Sticky audio player — plávajúci zaoblený box, vycentrovaný, vždy navrchu -->
     <div id="player-bar"
-        class="fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-[200%] z-[9999] w-[92%] sm:w-1/2
+        class="fixed bottom-4 left-1/2 -translate-x-1/2 translate-y-[200%] z-[9999] w-[92%] sm:w-1/3
            rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] shadow-2xl
            transition-transform duration-500">
-        <div class="px-4 sm:px-6 py-4 flex items-center gap-4 sm:gap-6">
+        <!-- Rovnaké rozloženie na všetkých zariadeniach: tlačidlo hore, slider s časom + zrušiť dole. -->
+        <div class="px-4 sm:px-6 py-4 flex flex-col gap-3">
 
-            <!-- Play / pause — JS prepína .hidden medzi oboma ikonami -->
-            <button id="player-toggle" aria-label="Play/Pause"
-                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] hover:bg-white/[0.16] transition-colors">
+            <!-- Ovládanie — pretočiť -10s, play/pause, pretočiť +10s — vycentrované nad sliderom -->
+            <div class="flex justify-center items-center gap-6">
 
-                <!-- Play ikona -->
-                <svg id="player-icon-play" width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-80">
-                    <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
-                </svg>
+                <!-- Pretočiť dozadu o 10s — kruhová šípka proti smeru hodinových ručičiek -->
+                <button id="player-back" aria-label="Rewind 10 seconds"
+                    class="shrink-0 text-white/60 hover:text-white transition-colors">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
+                        <text x="12" y="15.5" font-size="9" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="sans-serif">10</text>
+                    </svg>
+                </button>
 
-                <!-- Pause ikona — skrytá kým track nehrá -->
-                <svg id="player-icon-pause" width="12" height="14" viewBox="0 0 12 14" class="hidden opacity-80">
-                    <rect x="1.5" y="1" width="3" height="12" rx="1" fill="white" />
-                    <rect x="7.5" y="1" width="3" height="12" rx="1" fill="white" />
-                </svg>
-            </button>
+                <!-- Play / pause -->
+                <button id="player-toggle" aria-label="Play/Pause"
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.1] hover:bg-white/[0.16] transition-colors">
 
-            <!-- Názov tracku -->
-            <div class="min-w-0 w-24 sm:w-32 shrink-0">
-                <p id="player-title" class="truncate text-[15px] font-medium text-white/90">—</p>
+                    <!-- Play ikona -->
+                    <svg id="player-icon-play" width="12" height="14" viewBox="-1 -1 13 15" style="transform: translateX(1.5px);" class="opacity-80">
+                        <path d="M0 0.8L11 6.5L0 12.2V0.8Z" fill="white" stroke="white" stroke-width="1.4" stroke-linejoin="round" />
+                    </svg>
+
+                    <!-- Pause ikona — skrytá kým track nehrá -->
+                    <svg id="player-icon-pause" width="12" height="14" viewBox="0 0 12 14" class="hidden opacity-80">
+                        <rect x="1.5" y="1" width="3" height="12" rx="1" fill="white" />
+                        <rect x="7.5" y="1" width="3" height="12" rx="1" fill="white" />
+                    </svg>
+                </button>
+
+                <!-- Pretočiť dopredu o 10s — kruhová šípka v smere hodinových ručičiek -->
+                <button id="player-forward" aria-label="Forward 10 seconds"
+                    class="shrink-0 text-white/60 hover:text-white transition-colors">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                        <path d="M21 3v5h-5" />
+                        <text x="12" y="15.5" font-size="9" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none" font-family="sans-serif">10</text>
+                    </svg>
+                </button>
             </div>
 
-            <!-- Aktuálny čas — vľavo od slideru -->
-            <span id="player-current" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
-
-            <!-- Seek slider -->
-            <input id="player-seek" type="range" min="0" max="100" value="0"
-                class="flex-1 cursor-pointer accent-white/80">
-
-            <!-- Celková dĺžka — vpravo od slideru -->
-            <span id="player-duration" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
-
-            <!-- Zavrieť -->
-            <button id="player-close" aria-label="Close player"
-                class="shrink-0 text-white/35 hover:text-white/80 transition-colors">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+            <!-- Slider s časom + zrušiť vpravo -->
+            <div class="flex items-center gap-3">
+                <span id="player-current" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
+                <input id="player-seek" type="range" min="0" max="100" value="0"
+                    class="flex-1 cursor-pointer accent-white/80">
+                <span id="player-duration" class="shrink-0 font-mono text-[12px] tabular-nums text-white/45">0:00</span>
+                <button id="player-close" aria-label="Close player"
+                    class="shrink-0 text-white/35 hover:text-white/80 transition-colors">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
         </div>
     </div>
@@ -977,12 +1071,13 @@ $structuredData = [
             const toggleBtn = document.getElementById('player-toggle');
             const iconPlay = document.getElementById('player-icon-play');
             const iconPause = document.getElementById('player-icon-pause');
-            const titleEl = document.getElementById('player-title');
 
             const seek = document.getElementById('player-seek');
             const currentEl = document.getElementById('player-current');
             const durationEl = document.getElementById('player-duration');
             const closeBtn = document.getElementById('player-close');
+            const backBtn = document.getElementById('player-back');
+            const forwardBtn = document.getElementById('player-forward');
 
 
 
@@ -1043,7 +1138,7 @@ $structuredData = [
                 }
                 currentHowl = null;
                 if (currentRow) {
-                    currentRow.classList.remove('is-playing');
+                    currentRow.classList.remove('is-playing', 'is-paused');
                 }
                 currentRow = null;
                 showPlayingUI(false);
@@ -1058,6 +1153,14 @@ $structuredData = [
             function showPlayingUI(isPlaying) {
                 iconPlay.classList.toggle('hidden', isPlaying);
                 iconPause.classList.toggle('hidden', !isPlaying);
+                if (currentRow) {
+                    currentRow.classList.toggle('is-paused', !isPlaying);
+                    // Pri prehrávaní vždy zabezpeč stav "hrá" (rieši replay po dohraní,
+                    // keď onend predtým is-playing odobral)
+                    if (isPlaying) {
+                        currentRow.classList.add('is-playing');
+                    }
+                }
             }
 
 
@@ -1077,7 +1180,7 @@ $structuredData = [
                 }
 
                 if (currentRow) {
-                    currentRow.classList.remove('is-playing');
+                    currentRow.classList.remove('is-playing', 'is-paused');
                 }
                 currentRow = row;
                 currentRow.classList.add('is-playing');
@@ -1092,12 +1195,14 @@ $structuredData = [
                         showPlayingUI(false);
                         seek.value = 0;
                         currentEl.textContent = '0:00';
+                        if (currentRow) {
+                            currentRow.classList.remove('is-playing', 'is-paused');
+                        }
                     }
                 });
 
                 currentHowl.play();
 
-                titleEl.textContent = row.dataset.title;
                 bar.classList.remove('translate-y-[200%]');
             }
 
@@ -1123,6 +1228,33 @@ $structuredData = [
             });
 
             toggleBtn.addEventListener('click', togglePlayPause);
+
+            // Pretočenie o delta sekúnd (záporné = dozadu), s orezaním na 0..dĺžka
+            function skip(delta) {
+                if (!currentHowl) return;
+                const dur = currentHowl.duration();
+                let newPos = currentHowl.seek() + delta;
+                newPos = Math.max(0, Math.min(newPos, dur));
+                currentHowl.seek(newPos);
+                // Hneď aktualizuj zobrazenie (dôležité keď je track pozastavený)
+                currentEl.textContent = formatTime(newPos);
+                seek.value = (newPos / dur) * 100;
+            }
+
+            backBtn.addEventListener('click', () => skip(-10));
+            forwardBtn.addEventListener('click', () => skip(10));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.code !== 'Space') return;
+
+                const tag = e.target.tagName;
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'BUTTON') return;
+
+                if (!currentHowl) return;
+
+                e.preventDefault();
+                togglePlayPause();
+            });
 
             requestAnimationFrame(progressLoop);
 
