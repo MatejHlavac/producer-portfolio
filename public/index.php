@@ -262,6 +262,11 @@ $structuredData = [
         #hero-cta:hover .hero-glow {
             animation-play-state: paused;
         }
+
+        .track-row.is-playing {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+        }
     </style>
 </head>
 
@@ -1037,6 +1042,9 @@ $structuredData = [
                     currentHowl.unload();
                 }
                 currentHowl = null;
+                if (currentRow) {
+                    currentRow.classList.remove('is-playing');
+                }
                 currentRow = null;
                 showPlayingUI(false);
                 seek.value = 0;
@@ -1065,9 +1073,14 @@ $structuredData = [
 
                 if (currentHowl) {
                     currentHowl.unload();
+
                 }
 
+                if (currentRow) {
+                    currentRow.classList.remove('is-playing');
+                }
                 currentRow = row;
+                currentRow.classList.add('is-playing');
 
                 currentHowl = new Howl({
                     src: [row.dataset.src],
