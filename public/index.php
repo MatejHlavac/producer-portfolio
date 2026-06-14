@@ -814,7 +814,7 @@ $structuredData = [
         <div class="absolute top-0 left-0 w-full h-48 z-[6]" style="background: linear-gradient(to bottom, #050505 0%, transparent 100%);"></div>
 
         <!-- Footer element — matné sklo nad obrázkom -->
-        <footer class="relative z-10 mx-4 sm:mx-8 lg:mx-32 -translate-y-12 sm:translate-y-0">
+        <footer class="relative z-10 mx-4 sm:mx-8 lg:mx-32">
 
             <div class="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-[40px] px-6 sm:px-10 pt-7 pb-6">
 
@@ -832,7 +832,7 @@ $structuredData = [
                 <div class="mt-7 pt-4 flex flex-col gap-5 sm:flex-row sm:justify-between sm:items-center">
 
                     <!-- Vľavo: socials -->
-                    <div class="flex flex-wrap items-center justify-start gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">
+                    <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">
                         <a href="https://instagram.com/hlinkinn" target="_blank" class="hover:text-white transition-colors duration-300">Instagram</a>
                         <a href="mailto:matohlavac1@gmail.com" class="hover:text-white text-transition-colors duration-300">Email</a>
                         <a href="https://www.youtube.com/@hlinkin808" target="_blank" class="hover:text-white transition-colors duration-300">Youtube</a>
@@ -852,7 +852,7 @@ $structuredData = [
         </footer>
 
         <!-- Spodný text nad obrázkom -->
-        <p class="ocr-a absolute bottom-32 sm:bottom-28 left-0 right-0 z-10 flex flex-col items-center gap-2 text-center sm:flex-row sm:justify-center sm:gap-x-16 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+        <p class="ocr-a absolute bottom-28 left-0 right-0 z-10 flex justify-center items-center gap-x-16 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
             <span>© 2026. All rights reserved.</span>
             <span>Made by: Matej Hlaváč</span>
         </p>
@@ -1155,11 +1155,6 @@ $structuredData = [
                 iconPause.classList.toggle('hidden', !isPlaying);
                 if (currentRow) {
                     currentRow.classList.toggle('is-paused', !isPlaying);
-                    // Pri prehrávaní vždy zabezpeč stav "hrá" (rieši replay po dohraní,
-                    // keď onend predtým is-playing odobral)
-                    if (isPlaying) {
-                        currentRow.classList.add('is-playing');
-                    }
                 }
             }
 
@@ -1229,14 +1224,12 @@ $structuredData = [
 
             toggleBtn.addEventListener('click', togglePlayPause);
 
-            // Pretočenie o delta sekúnd (záporné = dozadu), s orezaním na 0..dĺžka
             function skip(delta) {
                 if (!currentHowl) return;
                 const dur = currentHowl.duration();
                 let newPos = currentHowl.seek() + delta;
                 newPos = Math.max(0, Math.min(newPos, dur));
                 currentHowl.seek(newPos);
-                // Hneď aktualizuj zobrazenie (dôležité keď je track pozastavený)
                 currentEl.textContent = formatTime(newPos);
                 seek.value = (newPos / dur) * 100;
             }
