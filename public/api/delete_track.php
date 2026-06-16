@@ -37,7 +37,7 @@ if ($id) {
     $deletionResult = $trackRepo->delete($id);
 
     echo json_encode([
-        "success" => true,
+        "success" => $deletionResult,
         "message" => $deletionResult ? "Track deleted" : "Database error"
     ]);
 } else {
